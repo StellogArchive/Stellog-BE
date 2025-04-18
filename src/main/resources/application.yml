@@ -1,0 +1,35 @@
+spring:
+  profiles:
+    active: local
+
+  datasource:
+    url: ${spring.datasource.url}
+    username: ${spring.datasource.username}
+    password: ${spring.datasource.password}
+
+  jpa:
+    database: mysql
+    database-platform: org.hibernate.dialect.MySQL8Dialect
+    hibernate:
+      ddl-auto: create
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: false
+        use_sql_comments: true
+
+oauth:
+  google:
+    client-id: ${oauth.google.client-id}
+    client-secret: ${oauth.google.client-secret}
+    redirect-uri: ${oauth.google.redirect-uri}
+    token-uri: ${oauth.google.token-uri}
+    user-info-uri: ${oauth.google.user-info-uri}
+  kakao:
+    client-id: ${oauth.kakao.client-id}
+    redirect-uri: ${oauth.kakao.redirect-uri}
+    token-uri: ${oauth.kakao.token-uri}
+    user-info-uri: ${oauth.kakao.user-info-uri}
+
+jwt:
+  secret: ${jwt.secret}
