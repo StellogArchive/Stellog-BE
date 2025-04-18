@@ -38,3 +38,4 @@ out/
 
 ### .yml ###
 /**/main/resources/application-local.yml
+/**/main/resources/application-prod.yml

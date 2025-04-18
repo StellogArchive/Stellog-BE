@@ -33,3 +33,4 @@ oauth:
 
 jwt:
   secret: ${jwt.secret}
+  expiry: ${jwt.expiry}

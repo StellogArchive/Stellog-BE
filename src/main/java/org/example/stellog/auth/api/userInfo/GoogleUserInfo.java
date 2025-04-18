@@ -3,7 +3,6 @@ package org.example.stellog.auth.api.userInfo;
 import java.util.Map;
 
 public class GoogleUserInfo implements OAuthUserInfo {
-
     private final Map<String, Object> attributes;
 
     public GoogleUserInfo(Map<String, Object> attributes) {

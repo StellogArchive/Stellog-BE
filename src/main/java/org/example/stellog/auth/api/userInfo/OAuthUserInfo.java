@@ -4,8 +4,11 @@ import java.util.Map;
 
 public interface OAuthUserInfo {
     String getEmail();
+
     String getName();
+
     String getProvider();
+
     String getProviderId();
 
     class OAuthUserInfoFactory {

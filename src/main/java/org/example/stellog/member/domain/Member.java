@@ -1,11 +1,6 @@
 package org.example.stellog.member.domain;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -33,8 +28,8 @@ public class Member {
     private String providerId; // 소셜에서 주는 고유 ID
 
     @Builder
-    public Member(String name, String nickName, String email, UserRole userRole,
-        String provider, String providerId) {
+    private Member(String name, String nickName, String email, UserRole userRole,
+                   String provider, String providerId) {
         this.name = name;
         this.nickName = nickName;
         this.email = email;
