@@ -23,10 +23,5 @@ public class KakaoUserInfo implements OAuthUserInfo {
     public String getProvider() {
         return "kakao";
     }
-
-    @Override
-    public String getProviderId() {
-        return String.valueOf(attributes.get("sub"));
-    }
 }
 

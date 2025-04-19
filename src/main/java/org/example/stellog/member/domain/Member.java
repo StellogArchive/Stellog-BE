@@ -25,16 +25,13 @@ public class Member {
 
     private String provider;
 
-    private String providerId; // 소셜에서 주는 고유 ID
-
     @Builder
     private Member(String name, String nickName, String email, UserRole userRole,
-                   String provider, String providerId) {
+                   String provider) {
         this.name = name;
         this.nickName = nickName;
         this.email = email;
         this.userRole = userRole;
         this.provider = provider;
-        this.providerId = providerId;
     }
 }

@@ -9,8 +9,6 @@ public interface OAuthUserInfo {
 
     String getProvider();
 
-    String getProviderId();
-
     class OAuthUserInfoFactory {
         public static OAuthUserInfo getUserInfo(String provider, Map<String, Object> attributes) {
             return switch (provider) {
