@@ -59,6 +59,6 @@ public class OAuthController {
             @RequestParam String code
     ) {
         String jwt = oAuthService.handleOAuthLogin(provider, code);
-        return ResponseEntity.ok().body(Map.of("token", jwt));
+        return ResponseEntity.ok().body(Map.of("accessToken", jwt));
     }
 }
