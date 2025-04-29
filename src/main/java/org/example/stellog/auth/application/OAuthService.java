@@ -5,6 +5,8 @@ import org.example.stellog.auth.api.jwt.JwtProvider;
 import org.example.stellog.auth.api.userInfo.OAuthUserInfo;
 import org.example.stellog.auth.client.GoogleOAuthClient;
 import org.example.stellog.auth.client.KakaoOAuthClient;
+import org.example.stellog.auth.exception.OAuthLoginFailedException;
+import org.example.stellog.auth.exception.UnsupportedProviderException;
 import org.example.stellog.member.domain.Member;
 import org.example.stellog.member.domain.UserRole;
 import org.example.stellog.member.repository.MemberRepository;
@@ -31,14 +33,31 @@ public class OAuthService {
     }
 
     public String handleOAuthLogin(String provider, String code) {
-        String idToken = switch (provider) {
-            case "google" -> googleOAuthClient.getIdToken(code);
-            case "kakao" -> kakaoOAuthClient.getIdToken(code);
-            default -> throw new IllegalArgumentException("지원하지 않는 provider: " + provider);
-        };
+        String idToken;
 
-        Map<String, Object> claims = jwtProvider.parserIdToken(idToken);
-        OAuthUserInfo userInfo = OAuthUserInfo.OAuthUserInfoFactory.getUserInfo(provider, claims);
+        try {
+            idToken = switch (provider) {
+                case "google" -> googleOAuthClient.getIdToken(code);
+                case "kakao" -> kakaoOAuthClient.getIdToken(code);
+                default -> throw new UnsupportedProviderException(provider);
+            };
+        } catch (Exception e) {
+            throw new OAuthLoginFailedException(e.getMessage());
+        }
+
+        Map<String, Object> claims;
+        try {
+            claims = jwtProvider.parserIdToken(idToken);
+        } catch (Exception e) {
+            throw new OAuthLoginFailedException("ID Token 파싱 실패: " + e.getMessage());
+        }
+
+        OAuthUserInfo userInfo;
+        try {
+            userInfo = OAuthUserInfo.OAuthUserInfoFactory.getUserInfo(provider, claims);
+        } catch (Exception e) {
+            throw new OAuthLoginFailedException("UserInfo 생성 실패: " + e.getMessage());
+        }
 
         Member member = memberRepository.findByEmail(userInfo.getEmail())
                 .orElseGet(() -> memberRepository.save(
