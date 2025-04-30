@@ -53,4 +53,19 @@ public class JwtProvider {
             throw new RuntimeException("ID 토큰 파싱 중 오류 발생", e);
         }
     }
+
+
+    public boolean validateToken(String token) {
+        try {
+            SecretKey key = Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8)); // 시크릿 키 생성
+            Jwts.parser() // 서명, 만료 시간, 포맷 등 검증
+                    .verifyWith(key)
+                    .build()
+                    .parseSignedClaims(token); // 유효한 토큰이면 여기서 예외 없이 끝남
+            return true;
+        } catch (Exception e) {
+            // 서명 불일치, 만료, 형식 오류 등의 경우 모두 false
+            return false;
+        }
+    }
 }
