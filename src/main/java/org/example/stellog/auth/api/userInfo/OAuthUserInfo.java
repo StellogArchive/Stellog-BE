@@ -1,6 +1,6 @@
 package org.example.stellog.auth.api.userInfo;
 
-import java.util.Map;
+import org.example.stellog.auth.api.dto.UserInfo;
 
 public interface OAuthUserInfo {
     String getEmail();
@@ -10,7 +10,7 @@ public interface OAuthUserInfo {
     String getProvider();
 
     class OAuthUserInfoFactory {
-        public static OAuthUserInfo getUserInfo(String provider, Map<String, Object> attributes) {
+        public static OAuthUserInfo getUserInfo(String provider, UserInfo attributes) {
             return switch (provider) {
                 case "google" -> new GoogleUserInfo(attributes);
                 case "kakao" -> new KakaoUserInfo(attributes);

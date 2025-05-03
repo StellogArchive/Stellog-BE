@@ -1,22 +1,22 @@
 package org.example.stellog.auth.api.userInfo;
 
-import java.util.Map;
+import org.example.stellog.auth.api.dto.UserInfo;
 
 public class KakaoUserInfo implements OAuthUserInfo {
-    private final Map<String, Object> attributes;
+    private final UserInfo attributes;
 
-    public KakaoUserInfo(Map<String, Object> attributes) {
+    public KakaoUserInfo(UserInfo attributes) {
         this.attributes = attributes;
     }
 
     @Override
     public String getEmail() {
-        return (String) attributes.get("email");
+        return attributes.email();
     }
 
     @Override
     public String getName() {
-        return (String) attributes.get("nickname");
+        return attributes.name();
     }
 
     @Override

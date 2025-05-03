@@ -1,6 +1,7 @@
 package org.example.stellog.auth.application;
 
 import lombok.RequiredArgsConstructor;
+import org.example.stellog.auth.api.dto.UserInfo;
 import org.example.stellog.auth.api.jwt.JwtProvider;
 import org.example.stellog.auth.api.jwt.dto.TokenDto;
 import org.example.stellog.auth.api.userInfo.OAuthUserInfo;
@@ -13,8 +14,6 @@ import org.example.stellog.member.domain.UserRole;
 import org.example.stellog.member.repository.MemberRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
-
-import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -35,7 +34,7 @@ public class OAuthService {
 
     public TokenDto handleOAuthLogin(String provider, String code) {
         String idToken = getIdToken(provider, code);
-        Map<String, Object> claims = parserIdTokne(idToken);
+        UserInfo claims = parserIdTokne(idToken);
         OAuthUserInfo userInfo = getUserInfo(provider, claims);
         Member member = getOrCreateMember(userInfo, provider);
         String token = jwtProvider.createToken(member.getEmail(), member.getId());
@@ -55,7 +54,7 @@ public class OAuthService {
         }
     }
 
-    private Map<String, Object> parserIdTokne(String idToken) {
+    private UserInfo parserIdTokne(String idToken) {
         try {
             return jwtProvider.parserIdToken(idToken);
         } catch (Exception e) {
@@ -63,7 +62,7 @@ public class OAuthService {
         }
     }
 
-    private OAuthUserInfo getUserInfo(String provider, Map<String, Object> claims) {
+    private OAuthUserInfo getUserInfo(String provider, UserInfo claims) {
         try {
             return OAuthUserInfo.OAuthUserInfoFactory.getUserInfo(provider, claims);
         } catch (Exception e) {

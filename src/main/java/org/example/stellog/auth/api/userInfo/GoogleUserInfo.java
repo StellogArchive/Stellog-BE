@@ -1,22 +1,22 @@
 package org.example.stellog.auth.api.userInfo;
 
-import java.util.Map;
+import org.example.stellog.auth.api.dto.UserInfo;
 
 public class GoogleUserInfo implements OAuthUserInfo {
-    private final Map<String, Object> attributes;
+    private final UserInfo attributes;
 
-    public GoogleUserInfo(Map<String, Object> attributes) {
+    public GoogleUserInfo(UserInfo attributes) {
         this.attributes = attributes;
     }
 
     @Override
     public String getEmail() {
-        return (String) attributes.get("email");
+        return attributes.email();
     }
 
     @Override
     public String getName() {
-        return (String) attributes.get("name");
+        return attributes.name();
     }
 
     @Override
