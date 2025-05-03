@@ -4,6 +4,7 @@ import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Info;
 import io.swagger.v3.oas.models.servers.Server;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -11,6 +12,12 @@ import java.util.List;
 
 @Configuration
 public class SwaggerConfig {
+
+    @Value("${swagger.server.prod-url}")
+    private String prodUrl;
+
+    @Value("${swagger.server.local-url}")
+    private String localUrl;
 
     @Bean
     public OpenAPI openAPI() {
@@ -30,10 +37,10 @@ public class SwaggerConfig {
     private List<Server> servers() {
         return List.of(
                 new Server()
-                        .url("https://stellog-api.duckdns.org")
+                        .url(prodUrl)
                         .description("prod develop server"),
                 new Server()
-                        .url("http://localhost:8080")
+                        .url(localUrl)
                         .description("Local development server")
         );
     }

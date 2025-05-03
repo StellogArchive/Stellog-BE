@@ -1,6 +1,6 @@
 spring:
   profiles:
-    active: local
+    active: prod
 
   datasource:
     url: ${spring.datasource.url}
@@ -34,3 +34,8 @@ oauth:
 jwt:
   secret: ${jwt.secret}
   expiry: ${jwt.expiry}
+
+swagger:
+  server:
+    prod-url: ${swagger.server.prod-url}
+    local-url: ${swagger.server.local-url}
