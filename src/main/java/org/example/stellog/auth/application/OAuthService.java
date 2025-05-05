@@ -1,14 +1,14 @@
 package org.example.stellog.auth.application;
 
 import lombok.RequiredArgsConstructor;
-import org.example.stellog.auth.api.dto.UserInfo;
-import org.example.stellog.auth.api.jwt.JwtProvider;
-import org.example.stellog.auth.api.jwt.dto.TokenDto;
 import org.example.stellog.auth.api.userInfo.OAuthUserInfo;
+import org.example.stellog.auth.api.userInfo.UserInfo;
 import org.example.stellog.auth.client.GoogleOAuthClient;
 import org.example.stellog.auth.client.KakaoOAuthClient;
 import org.example.stellog.auth.exception.OAuthLoginFailedException;
 import org.example.stellog.auth.exception.UnsupportedProviderException;
+import org.example.stellog.global.jwt.JwtProvider;
+import org.example.stellog.global.jwt.dto.TokenDto;
 import org.example.stellog.member.domain.Member;
 import org.example.stellog.member.domain.UserRole;
 import org.example.stellog.member.repository.MemberRepository;

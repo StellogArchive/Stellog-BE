@@ -1,7 +1,5 @@
 package org.example.stellog.auth.api.userInfo;
 
-import org.example.stellog.auth.api.dto.UserInfo;
-
 public class GoogleUserInfo implements OAuthUserInfo {
     private final UserInfo attributes;
 

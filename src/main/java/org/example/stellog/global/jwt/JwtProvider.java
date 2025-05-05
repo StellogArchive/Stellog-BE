@@ -1,4 +1,4 @@
-package org.example.stellog.auth.api.jwt;
+package org.example.stellog.global.jwt;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.jsonwebtoken.Jwts;

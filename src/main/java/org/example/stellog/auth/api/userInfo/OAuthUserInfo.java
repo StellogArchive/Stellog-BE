@@ -1,7 +1,5 @@
 package org.example.stellog.auth.api.userInfo;
 
-import org.example.stellog.auth.api.dto.UserInfo;
-
 public interface OAuthUserInfo {
     String getEmail();
 

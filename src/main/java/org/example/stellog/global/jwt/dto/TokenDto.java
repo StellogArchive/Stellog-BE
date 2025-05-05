@@ -1,4 +1,4 @@
-package org.example.stellog.auth.api.jwt.dto;
+package org.example.stellog.global.jwt.dto;
 
 public record TokenDto(
         String accessToken

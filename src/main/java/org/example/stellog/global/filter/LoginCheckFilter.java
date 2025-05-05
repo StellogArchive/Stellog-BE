@@ -8,8 +8,8 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.example.stellog.auth.api.jwt.JwtProvider;
 import org.example.stellog.global.filter.exception.AuthenticationException;
+import org.example.stellog.global.jwt.JwtProvider;
 import org.springframework.util.PatternMatchUtils;
 import org.springframework.web.filter.GenericFilterBean;
 
