@@ -55,11 +55,11 @@ public class OAuthController {
             description = "소셜 로그인 제공자에서 받은 인증 코드로 ID 토큰을 요청하고, 사용자 정보를 처리하여 JWT 토큰을 반환합니다."
     )
     @GetMapping("/callback/{provider}")
-    public ResponseEntity<Map<String, TokenDto>> handleCallback(
+    public ResponseEntity<TokenDto> handleCallback(
             @PathVariable String provider,
             @RequestParam String code
     ) {
         TokenDto tokenDto = oAuthService.handleOAuthLogin(provider, code);
-        return ResponseEntity.ok().body(Map.of("accessToken", tokenDto));
+        return ResponseEntity.ok().body(tokenDto);
     }
 }

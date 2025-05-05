@@ -4,7 +4,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.Jwts.SIG;
 import io.jsonwebtoken.security.Keys;
-import org.example.stellog.auth.api.dto.UserInfo;
+import lombok.RequiredArgsConstructor;
+import org.example.stellog.auth.api.userInfo.UserInfo;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -15,12 +16,15 @@ import java.util.Base64;
 import java.util.Date;
 
 @Component
+@RequiredArgsConstructor
 public class JwtProvider {
     @Value("${jwt.secret}")
     private String secret;
 
     @Value("${jwt.expiry}")
     private long expiry;
+
+    private final ObjectMapper objectMapper;
 
     public String createToken(String email, Long userId) {
 
@@ -45,7 +49,6 @@ public class JwtProvider {
 
         String payload = new String(Base64.getUrlDecoder().decode(tokenParts[1]), StandardCharsets.UTF_8);
         try {
-            ObjectMapper objectMapper = new ObjectMapper();
             return objectMapper.readValue(payload, UserInfo.class);
         } catch (IOException e) {
             throw new RuntimeException("ID 토큰 파싱 중 오류 발생", e);

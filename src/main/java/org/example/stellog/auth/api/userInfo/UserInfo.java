@@ -1,4 +1,4 @@
-package org.example.stellog.auth.api.dto;
+package org.example.stellog.auth.api.userInfo;
 
 public record UserInfo(
         String name,
