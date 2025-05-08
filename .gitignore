@@ -37,4 +37,8 @@ out/
 .vscode/
 
 ### .yml ###
-*.yml
+/**/main/resources/application-local.yml
+/**/main/resources/application-prod.yml
+
+### .DS_Store ###
+.DS_Store
