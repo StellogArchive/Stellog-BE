@@ -7,12 +7,10 @@ import org.example.stellog.global.annotation.AuthenticatedEmail;
 import org.example.stellog.global.template.RspTemplate;
 import org.example.stellog.room.api.dto.request.RoomRequestDto;
 import org.example.stellog.room.api.dto.response.RoomDetailResponseDto;
-import org.example.stellog.room.api.dto.response.RoomResponseDto;
+import org.example.stellog.room.api.dto.response.RoomListResponseDto;
 import org.example.stellog.room.service.RoomService;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -38,7 +36,7 @@ public class RoomController {
             description = "현재 로그인 한 사용자의 모든 방 목록을 조회합니다."
     )
     @GetMapping
-    public RspTemplate<List<RoomResponseDto>> getAllRoomByEmail(@AuthenticatedEmail String email) {
+    public RspTemplate<RoomListResponseDto> getAllRoomByEmail(@AuthenticatedEmail String email) {
         return new RspTemplate<>(
                 HttpStatus.OK,
                 "로그인 한 사용자가 생성한 방 목록을 성공적으로 조회하였습니다.",
@@ -49,8 +47,8 @@ public class RoomController {
             summary = "방 상세 정보 조회",
             description = "사용자의 방 상세 정보를 조회 합니다."
     )
-    @GetMapping("/detail")
-    public RspTemplate<RoomDetailResponseDto> getRoomDetails(@AuthenticatedEmail String email, @RequestParam Long roomId) {
+    @GetMapping("/detail/{roomId}")
+    public RspTemplate<RoomDetailResponseDto> getRoomDetails(@AuthenticatedEmail String email, @PathVariable Long roomId) {
         return new RspTemplate<>(
                 HttpStatus.OK,
                 "로그인 한 사용자의 방 상세 정보를 성공적으로 조회하였습니다.",
@@ -61,8 +59,8 @@ public class RoomController {
             summary = "방 수정",
             description = "방을 수정합니다."
     )
-    @PutMapping
-    public RspTemplate<Void> updateRoom(@AuthenticatedEmail String email, @RequestParam Long roomId, @RequestBody RoomRequestDto roomRequestDto) {
+    @PutMapping("/{roomId}")
+    public RspTemplate<Void> updateRoom(@AuthenticatedEmail String email, @PathVariable Long roomId, @RequestBody RoomRequestDto roomRequestDto) {
         roomService.updateRoom(email, roomId, roomRequestDto);
         return new RspTemplate<>(
                 HttpStatus.OK,
@@ -73,8 +71,8 @@ public class RoomController {
             summary = "방 삭제",
             description = "방을 삭제합니다."
     )
-    @DeleteMapping
-    public RspTemplate<Void> deleteRoom(@AuthenticatedEmail String email, @RequestParam Long roomId) {
+    @DeleteMapping("/{roomId}")
+    public RspTemplate<Void> deleteRoom(@AuthenticatedEmail String email, @PathVariable Long roomId) {
         roomService.deleteRoom(email, roomId);
         return new RspTemplate<>(
                 HttpStatus.OK,

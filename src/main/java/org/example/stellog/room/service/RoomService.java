@@ -6,8 +6,9 @@ import org.example.stellog.member.domain.Member;
 import org.example.stellog.member.exception.MemberNotFoundException;
 import org.example.stellog.member.repository.MemberRepository;
 import org.example.stellog.room.api.dto.request.RoomRequestDto;
-import org.example.stellog.room.api.dto.response.MemberSimpleDto;
+import org.example.stellog.room.api.dto.response.MemberInfoDto;
 import org.example.stellog.room.api.dto.response.RoomDetailResponseDto;
+import org.example.stellog.room.api.dto.response.RoomListResponseDto;
 import org.example.stellog.room.api.dto.response.RoomResponseDto;
 import org.example.stellog.room.domain.Room;
 import org.example.stellog.room.domain.RoomMember;
@@ -17,8 +18,9 @@ import org.example.stellog.room.exception.RoomNotFoundException;
 import org.example.stellog.room.exception.UnauthorizedRoomAccessException;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -31,7 +33,8 @@ public class RoomService {
     @Transactional
     public void createRoom(String email, RoomRequestDto roomRequestDto) {
         Member currentMember = findMemberByEmail(email);
-        List<Member> selectedMembers = memberRepository.findAllById(roomRequestDto.members());
+        List<Member> selectedMembers = memberRepository.findAllById(roomRequestDto.memberIdList());
+
         if (!selectedMembers.contains(currentMember)) {
             selectedMembers.add(currentMember);
         }
@@ -49,30 +52,35 @@ public class RoomService {
                     .room(room)
                     .isOwner(isOwner)
                     .build();
-            room.addMemberRoom(roomMember);
             roomMemberRepository.save(roomMember);
         }
     }
 
-    public List<RoomResponseDto> getAllRoom(String email) {
+    public RoomListResponseDto getAllRoom(String email) {
         Member currentMember = findMemberByEmail(email);
         List<RoomMember> roomMembers = roomMemberRepository.findByMember(currentMember);
 
-        return roomMembers.stream()
+        List<RoomResponseDto> rooms = roomMembers.stream()
                 .map(RoomMember::getRoom)
-                .distinct()
-                .map(room -> new RoomResponseDto(room.getId(), room.getName(), room.getRoomMembers().size()))
+                .map(room -> {
+                    int memberCount = roomMemberRepository.countByRoom(room);
+                    return new RoomResponseDto(room.getId(), room.getName(), memberCount);
+                })
                 .collect(Collectors.toList());
+
+        return new RoomListResponseDto(rooms);
     }
 
     public RoomDetailResponseDto getRoomDetails(String email, Long roomId) {
         Member currentMember = findMemberByEmail(email);
         Room room = findRoomById(roomId);
+        List<RoomMember> roomMembers = findRoomMemberByRoom(room);
+
         validateMemberInRoom(currentMember, room);
 
-        List<MemberSimpleDto> memberDtos = room.getRoomMembers().stream()
+        List<MemberInfoDto> memberDtos = roomMembers.stream()
                 .map(RoomMember::getMember)
-                .map(MemberSimpleDto::from)
+                .map(MemberInfoDto::from)
                 .toList();
 
         return new RoomDetailResponseDto(room.getId(), room.getName(), memberDtos);
@@ -82,20 +90,22 @@ public class RoomService {
     public void updateRoom(String email, Long roomId, RoomRequestDto roomRequestDto) {
         Member currentMember = findMemberByEmail(email);
         Room room = findRoomById(roomId);
+
         checkRoomOwner(currentMember, room);
+
         room.updateRoom(roomRequestDto.name(), roomRequestDto.isPublic());
-        updateRoomMembers(room, roomRequestDto.members(), currentMember);
+        updateRoomMembers(room, roomRequestDto.memberIdList(), currentMember);
     }
 
     @Transactional
     public void deleteRoom(String email, Long roomId) {
         Member currentMember = findMemberByEmail(email);
         Room room = findRoomById(roomId);
+        List<RoomMember> roomMembers = findRoomMemberByRoom(room);
+
         checkRoomOwner(currentMember, room);
 
-        List<RoomMember> roomMembers = new ArrayList<>(room.getRoomMembers());
         roomMemberRepository.deleteAll(roomMembers);
-
         roomRepository.delete(room);
     }
 
@@ -109,57 +119,62 @@ public class RoomService {
                 .orElseThrow(RoomNotFoundException::new);
     }
 
+    private List<RoomMember> findRoomMemberByRoom(Room room) {
+        return roomMemberRepository.findByRoom(room);
+    }
+
     private void validateMemberInRoom(Member member, Room room) {
-        boolean isRoomMember = room.getRoomMembers().stream()
-                .anyMatch(roomMember -> roomMember.getMember().equals(member));
+        boolean isRoomMember = roomMemberRepository.existsByMemberAndRoom(member, room);
         if (!isRoomMember) {
             throw new UnauthorizedRoomAccessException("해당 방에 접근 권한이 없습니다.");
         }
     }
 
     private void checkRoomOwner(Member currentMember, Room room) {
-        boolean isOwner = room.getRoomMembers().stream()
-                .anyMatch(roomMember -> roomMember.getMember().equals(currentMember) && roomMember.isOwner());
+        boolean isOwner = roomMemberRepository.existsByMemberAndRoomAndIsOwnerTrue(currentMember, room);
         if (!isOwner) {
-            throw new UnauthorizedRoomAccessException("해당 방 수정 권한이 없습니다.");
+            throw new UnauthorizedRoomAccessException("해당 방 수정 및 삭제 권한이 없습니다.");
         }
     }
 
     private void updateRoomMembers(Room room, List<Long> newMemberIds, Member currentMember) {
-        List<RoomMember> currentRoomMembers = new ArrayList<>(room.getRoomMembers());
+        Set<Long> distinctIds = new HashSet<>(newMemberIds);
+
+        List<Member> foundMembers = memberRepository.findAllById(distinctIds);
+        Set<Long> foundMemberIds = foundMembers.stream()
+                .map(Member::getId)
+                .collect(Collectors.toSet());
+
+        if (foundMemberIds.size() != distinctIds.size()) {
+            Set<Long> notFoundIds = new HashSet<>(distinctIds);
+            notFoundIds.removeAll(foundMemberIds);
+            throw new MemberNotFoundException("존재하지 않는 사용자 ID가 포함되어 있습니다." + notFoundIds);
+        }
+
+        if (!foundMembers.contains(currentMember)) {
+            foundMembers.add(currentMember);
+        }
+
+        List<RoomMember> currentRoomMembers = roomMemberRepository.findByRoom(room);
         List<Member> currentMembers = currentRoomMembers.stream()
                 .map(RoomMember::getMember)
                 .toList();
 
-        // 1. 새로운 멤버 목록 조회
-        List<Member> updateMembers = memberRepository.findAllById(newMemberIds);
-
-        // 2. 현재 멤버 목록에 현재 유저가 없으면 추가
-        if (!updateMembers.contains(currentMember)) {
-            updateMembers.add(currentMember);
-        }
-
-        // 3. 추가해야 할 멤버와 삭제해야 할 멤버 구분
-        List<Member> toAdd = updateMembers.stream()
+        List<Member> toAdd = foundMembers.stream()
                 .filter(m -> !currentMembers.contains(m))
                 .toList();
 
         List<RoomMember> toRemove = currentRoomMembers.stream()
-                .filter(rm -> !updateMembers.contains(rm.getMember()) && !rm.isOwner())
+                .filter(rm -> !foundMembers.contains(rm.getMember()) && !rm.isOwner())
                 .toList();
 
-        // 4. 멤버 삭제 처리
-        removeRoomMembers(room, toRemove);
-
-        // 5. 멤버 추가 처리
+        removeRoomMembers(toRemove);
         addRoomMembers(room, toAdd, currentMember);
     }
 
-    private void removeRoomMembers(Room room, List<RoomMember> toRemove) {
-        for (RoomMember rm : toRemove) {
-            room.getRoomMembers().remove(rm);
-            roomMemberRepository.delete(rm);
-        }
+
+    private void removeRoomMembers(List<RoomMember> toRemove) {
+        roomMemberRepository.deleteAll(toRemove);
     }
 
     private void addRoomMembers(Room room, List<Member> toAdd, Member currentMember) {
@@ -169,7 +184,6 @@ public class RoomService {
                     .member(m)
                     .isOwner(m.equals(currentMember))
                     .build();
-            room.addMemberRoom(newRm);
             roomMemberRepository.save(newRm);
         }
     }
