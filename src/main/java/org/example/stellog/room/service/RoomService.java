@@ -46,7 +46,7 @@ public class RoomService {
         roomRepository.save(room);
 
         for (Member member : selectedMembers) {
-            boolean isOwner = member.equals(currentMember);
+            boolean isOwner = member.getId().equals(currentMember.getId());
             RoomMember roomMember = RoomMember.builder()
                     .member(member)
                     .room(room)
@@ -66,7 +66,7 @@ public class RoomService {
                     int memberCount = roomMemberRepository.countByRoom(room);
                     return new RoomResponseDto(room.getId(), room.getName(), memberCount);
                 })
-                .collect(Collectors.toList());
+                .toList();
 
         return new RoomListResponseDto(rooms);
     }
