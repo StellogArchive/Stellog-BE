@@ -45,6 +45,14 @@ public class LoginCheckFilter extends GenericFilterBean {
                     return;
                 }
                 // 토큰이 유효한 경우 사용자 정보를 로그로 출력
+
+                String email = jwtProvider.extractEmailFromToken(token);
+                Long userId = jwtProvider.extractUserIdFromToken(token);
+
+                httpRequest.setAttribute("userId", userId);
+                httpRequest.setAttribute("email", email);
+
+                log.info("인증된 사용자: userId={}, email={}", userId, email);
             }
             chain.doFilter(request, response);
         } catch (AuthenticationException e) {

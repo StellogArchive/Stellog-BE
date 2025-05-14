@@ -1,9 +1,11 @@
 package org.example.stellog.global.jwt;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.Jwts.SIG;
 import io.jsonwebtoken.security.Keys;
+import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.example.stellog.auth.api.userInfo.UserInfo;
 import org.springframework.beans.factory.annotation.Value;
@@ -25,6 +27,14 @@ public class JwtProvider {
     private long expiry;
 
     private final ObjectMapper objectMapper;
+
+    private SecretKey secretKey;
+
+    @PostConstruct
+    public void init() {
+        // secret 값을 Base64 디코딩하여 Key 생성
+        this.secretKey = Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
+    }
 
     public String createToken(String email, Long userId) {
 
@@ -55,12 +65,10 @@ public class JwtProvider {
         }
     }
 
-
     public boolean validateToken(String token) {
         try {
-            SecretKey key = Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8)); // 시크릿 키 생성
             Jwts.parser() // 서명, 만료 시간, 포맷 등 검증
-                    .verifyWith(key)
+                    .verifyWith(secretKey)
                     .build()
                     .parseSignedClaims(token); // 유효한 토큰이면 여기서 예외 없이 끝남
             return true;
@@ -68,5 +76,23 @@ public class JwtProvider {
             // 서명 불일치, 만료, 형식 오류 등의 경우 모두 false
             return false;
         }
+    }
+
+    public String extractEmailFromToken(String token) {
+        Claims claims = getClaimsFromToken(token);
+        return claims.getSubject();
+    }
+
+    public Long extractUserIdFromToken(String token) {
+        Claims claims = getClaimsFromToken(token);
+        return claims.get("userId", Long.class);
+    }
+
+    private Claims getClaimsFromToken(String token) {
+        return Jwts.parser()
+                .verifyWith(secretKey)
+                .build()
+                .parseSignedClaims(token)
+                .getPayload();
     }
 }
