@@ -29,4 +29,9 @@ public class Review {
         this.content = content;
         this.room = room;
     }
+
+    public void updateReview(String title, String content) {
+        this.title = title;
+        this.content = content;
+    }
 }
