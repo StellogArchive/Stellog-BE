@@ -1,6 +1,10 @@
 spring:
   profiles:
     active: local
+  sql:
+    init:
+      mode: always
+      data-locations: classpath:starbucks.sql
 
   datasource:
     url: ${spring.datasource.url}
