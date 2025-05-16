@@ -1,4 +1,4 @@
-package org.example.stellog.room.domain;
+package org.example.stellog.review.domain;
 
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -10,10 +10,10 @@ import org.example.stellog.member.domain.Member;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class RoomMember {
+public class ReviewMember {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "room_member_id")
+    @Column(name = "review_member_id")
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -21,15 +21,12 @@ public class RoomMember {
     private Member member;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "room_id")
-    private Room room;
-
-    private boolean isOwner;
+    @JoinColumn(name = "review_id")
+    private Review review;
 
     @Builder
-    public RoomMember(Room room, Member member, boolean isOwner) {
-        this.room = room;
+    private ReviewMember(Member member, Review review) {
         this.member = member;
-        this.isOwner = isOwner;
+        this.review = review;
     }
 }

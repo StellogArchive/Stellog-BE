@@ -8,7 +8,7 @@ import org.example.stellog.global.template.RspTemplate;
 import org.example.stellog.room.api.dto.request.RoomRequestDto;
 import org.example.stellog.room.api.dto.response.RoomDetailResponseDto;
 import org.example.stellog.room.api.dto.response.RoomListResponseDto;
-import org.example.stellog.room.service.RoomService;
+import org.example.stellog.room.application.RoomService;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
