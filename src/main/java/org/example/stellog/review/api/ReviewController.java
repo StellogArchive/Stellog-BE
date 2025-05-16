@@ -6,9 +6,9 @@ import lombok.RequiredArgsConstructor;
 import org.example.stellog.global.annotation.AuthenticatedEmail;
 import org.example.stellog.global.template.RspTemplate;
 import org.example.stellog.review.api.dto.request.ReviewRequestDto;
-import org.example.stellog.review.api.dto.respoonse.ReviewListResponseDto;
-import org.example.stellog.review.api.dto.respoonse.ReviewResponseDto;
-import org.example.stellog.review.service.ReviewService;
+import org.example.stellog.review.api.dto.response.ReviewListResponseDto;
+import org.example.stellog.review.api.dto.response.ReviewResponseDto;
+import org.example.stellog.review.application.ReviewService;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
@@ -41,7 +41,7 @@ public class ReviewController {
         return new RspTemplate<>(
                 HttpStatus.OK,
                 "리뷰 목록을 성공적으로 조회하였습니다.",
-                reviewService.getAllReviewsByStarbucksId(starbucksId));
+                reviewService.getAllReviewsByStarbucksId(email, starbucksId));
     }
 
     @Operation(
@@ -61,13 +61,17 @@ public class ReviewController {
             description = "리뷰를 상세 조회합니다."
     )
     @GetMapping("/{reviewId}")
-    public RspTemplate<ReviewResponseDto> getReviewById(@PathVariable Long reviewId) {
+    public RspTemplate<ReviewResponseDto> getReviewById(@AuthenticatedEmail String email, @PathVariable Long reviewId) {
         return new RspTemplate<>(
                 HttpStatus.OK,
                 "리뷰를 성공적으로 조회하였습니다.",
-                reviewService.getReviewById(reviewId));
+                reviewService.getReviewById(email, reviewId));
     }
 
+    @Operation(
+            summary = "리뷰 수정",
+            description = "리뷰를 수정합니다. 리뷰를 작성한 사용자만 수정할 수 있습니다."
+    )
     @PutMapping({"/{reviewId}"})
     public RspTemplate<Void> updateReview(@AuthenticatedEmail String email, @PathVariable Long reviewId, @RequestBody ReviewRequestDto reviewRequestDto) {
         reviewService.updateReview(email, reviewId, reviewRequestDto);
@@ -76,11 +80,39 @@ public class ReviewController {
                 "리뷰가 성공적으로 수정되었습니다.");
     }
 
+    @Operation(
+            summary = "리뷰 삭제",
+            description = "리뷰를 삭제합니다. 리뷰를 작성한 사용자만 삭제할 수 있습니다."
+    )
     @DeleteMapping("/{reviewId}")
     public RspTemplate<Void> deleteReview(@AuthenticatedEmail String email, @PathVariable Long reviewId) {
         reviewService.deleteReview(email, reviewId);
         return new RspTemplate<>(
                 HttpStatus.OK,
                 "리뷰가 성공적으로 삭제되었습니다.");
+    }
+
+    @Operation(
+            summary = "리뷰 좋아요",
+            description = "리뷰에 좋아요를 누릅니다."
+    )
+    @PostMapping("/like/{reviewId}")
+    public RspTemplate<Void> likeReview(@AuthenticatedEmail String email, @PathVariable Long reviewId) {
+        reviewService.likeReview(email, reviewId);
+        return new RspTemplate<>(
+                HttpStatus.OK,
+                "리뷰에 좋아요를 눌렀습니다.");
+    }
+
+    @Operation(
+            summary = "리뷰 좋아요 취소",
+            description = "리뷰에 좋아요를 취소합니다."
+    )
+    @DeleteMapping("/like/{reviewId}")
+    public RspTemplate<Void> unlikeReview(@AuthenticatedEmail String email, @PathVariable Long reviewId) {
+        reviewService.unlikeReview(email, reviewId);
+        return new RspTemplate<>(
+                HttpStatus.OK,
+                "리뷰에 좋아요를 취소했습니다.");
     }
 }

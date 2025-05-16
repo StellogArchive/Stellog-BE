@@ -12,4 +12,6 @@ public interface StarbucksReviewRepository extends JpaRepository<StarbucksReview
     List<StarbucksReview> findAllByStarbucks(Starbucks starbucks);
 
     Optional<StarbucksReview> findByReview(Review review);
+
+    List<StarbucksReview> findAllByReviewIn(List<Review> reviews);
 }

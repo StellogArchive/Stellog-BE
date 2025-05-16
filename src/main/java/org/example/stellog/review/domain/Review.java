@@ -13,6 +13,7 @@ import org.example.stellog.room.domain.Room;
 public class Review {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "review_id")
     private Long id;
 
     private String title;
@@ -24,7 +25,7 @@ public class Review {
     private Room room;
 
     @Builder
-    public Review(String title, String content, Room room) {
+    private Review(String title, String content, Room room) {
         this.title = title;
         this.content = content;
         this.room = room;
