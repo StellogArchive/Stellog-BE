@@ -74,32 +74,20 @@ public class ReviewService {
         Starbucks starbucks = findStarbucksById(starbucksId);
 
         List<StarbucksReview> starbucksReviews = starbucksReviewRepository.findAllByStarbucks(starbucks);
+        if (starbucksReviews.isEmpty()) {
+            return new ReviewListResponseDto(Collections.emptyList());
+        }
+
         List<Review> reviews = starbucksReviews.stream()
                 .map(StarbucksReview::getReview)
                 .toList();
 
-        Map<Long, StarbucksReview> reviewToStarbucksReviewMap = createReviewToStarbucksReviewMap(starbucksReviews);
-
-        if (reviews.isEmpty()) {
-            return new ReviewListResponseDto(Collections.emptyList());
-        }
-
         List<ReviewMember> reviewMembers = reviewMemberRepository.findAllByReviewIn(reviews);
         Map<Long, ReviewMember> reviewToMemberMap = createReviewToReviewMemberMap(reviewMembers);
 
-        Map<Long, Integer> likeCounts = countLikesByReviewIn(reviews);
-        Set<Long> likedReviewIds = getLikedReviewsByMember(currentMember, reviews);
-
-        List<ReviewResponseDto> reviewResponseDtos = getReviewResponseDtoList(
-                reviews,
-                reviewToMemberMap,
-                reviewToStarbucksReviewMap,
-                likedReviewIds,
-                likeCounts
-        );
-
-        return new ReviewListResponseDto(reviewResponseDtos);
+        return getReviewListResponseDto(currentMember, starbucksReviews, reviews, reviewToMemberMap);
     }
+
 
     public ReviewListResponseDto getAllReviewsByRoomId(String email, Long roomId) {
         Member currentMember = memberRoomValidator.findMemberByEmail(email);
@@ -112,20 +100,28 @@ public class ReviewService {
         Map<Long, ReviewMember> reviewToMemberMap = createReviewToReviewMemberMap(reviewMembers);
 
         List<StarbucksReview> starbucksReviews = starbucksReviewRepository.findAllByReviewIn(reviews);
-        Map<Long, StarbucksReview> reviewToStarbucksReviewMap = createReviewToStarbucksReviewMap(starbucksReviews);
+        return getReviewListResponseDto(currentMember, starbucksReviews, reviews, reviewToMemberMap);
+    }
 
-        Map<Long, Integer> likeCounts = countLikesByReviewIn(reviews);
-        Set<Long> likedReviewIds = getLikedReviewsByMember(currentMember, reviews);
+    public ReviewListResponseDto getReviewsByRoomIdAndStarbucksId(String email, Long roomId, Long starbucksId) {
+        Member currentMember = memberRoomValidator.findMemberByEmail(email);
+        Room room = memberRoomValidator.findRoomById(roomId);
+        memberRoomValidator.validateMemberInRoom(currentMember, room);
+        Starbucks starbucks = findStarbucksById(starbucksId);
 
-        List<ReviewResponseDto> reviewResponseDtos = getReviewResponseDtoList(
-                reviews,
-                reviewToMemberMap,
-                reviewToStarbucksReviewMap,
-                likedReviewIds,
-                likeCounts
+        List<StarbucksReview> starbucksReviews = starbucksReviewRepository.findAllByStarbucksAndRoom(starbucks, room);
+        if (starbucksReviews.isEmpty()) {
+            return new ReviewListResponseDto(Collections.emptyList());
+        }
+
+        List<Review> reviews = starbucksReviews.stream()
+                .map(StarbucksReview::getReview)
+                .toList();
+
+        Map<Long, ReviewMember> reviewToMemberMap = createReviewToReviewMemberMap(
+                reviewMemberRepository.findAllByReviewIn(reviews)
         );
-
-        return new ReviewListResponseDto(reviewResponseDtos);
+        return getReviewListResponseDto(currentMember, starbucksReviews, reviews, reviewToMemberMap);
     }
 
     public ReviewResponseDto getReviewById(String email, Long reviewId) {
@@ -255,6 +251,22 @@ public class ReviewService {
     private Map<Long, ReviewMember> createReviewToReviewMemberMap(List<ReviewMember> reviewMembers) {
         return reviewMembers.stream()
                 .collect(Collectors.toMap(rm -> rm.getReview().getId(), rm -> rm));
+    }
+
+    private ReviewListResponseDto getReviewListResponseDto(Member currentMember, List<StarbucksReview> starbucksReviews, List<Review> reviews, Map<Long, ReviewMember> reviewToMemberMap) {
+        Map<Long, StarbucksReview> reviewToStarbucksReviewMap = createReviewToStarbucksReviewMap(starbucksReviews);
+        Map<Long, Integer> likeCounts = countLikesByReviewIn(reviews);
+        Set<Long> likedReviewIds = getLikedReviewsByMember(currentMember, reviews);
+
+        List<ReviewResponseDto> reviewResponseDtos = getReviewResponseDtoList(
+                reviews,
+                reviewToMemberMap,
+                reviewToStarbucksReviewMap,
+                likedReviewIds,
+                likeCounts
+        );
+
+        return new ReviewListResponseDto(reviewResponseDtos);
     }
 
     private List<ReviewResponseDto> getReviewResponseDtoList(List<Review> reviews,

@@ -57,6 +57,18 @@ public class ReviewController {
     }
 
     @Operation(
+            summary = "리뷰 목록 조회",
+            description = "방과 스타벅스 별 리뷰 목록을 조회합니다."
+    )
+    @GetMapping("{roomId}/{starbucksId}")
+    public RspTemplate<ReviewListResponseDto> getReviewsByRoomIdAndStarbucksId(@AuthenticatedEmail String email, @PathVariable Long roomId, @PathVariable Long starbucksId) {
+        return new RspTemplate<>(
+                HttpStatus.OK,
+                "리뷰 목록을 성공적으로 조회하였습니다.",
+                reviewService.getReviewsByRoomIdAndStarbucksId(email, roomId, starbucksId));
+    }
+
+    @Operation(
             summary = "리뷰 상세 조회",
             description = "리뷰를 상세 조회합니다."
     )
