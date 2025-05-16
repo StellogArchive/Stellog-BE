@@ -13,6 +13,7 @@ import org.example.stellog.member.domain.Member;
 public class RoomMember {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "room_member_id")
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
