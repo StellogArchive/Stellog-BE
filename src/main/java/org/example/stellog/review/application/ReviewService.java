@@ -25,7 +25,6 @@ import org.example.stellog.starbucks.domain.repository.StarbucksRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -74,16 +73,11 @@ public class ReviewService {
         Starbucks starbucks = findStarbucksById(starbucksId);
 
         List<StarbucksReview> starbucksReviews = starbucksReviewRepository.findAllByStarbucks(starbucks);
-        if (starbucksReviews.isEmpty()) {
-            return new ReviewListResponseDto(Collections.emptyList());
-        }
 
         List<Review> reviews = starbucksReviews.stream()
                 .map(StarbucksReview::getReview)
                 .toList();
-
-        List<ReviewMember> reviewMembers = reviewMemberRepository.findAllByReviewIn(reviews);
-        Map<Long, ReviewMember> reviewToMemberMap = createReviewToReviewMemberMap(reviewMembers);
+        Map<Long, ReviewMember> reviewToMemberMap = createReviewToReviewMemberMap(reviews);
 
         return getReviewListResponseDto(currentMember, starbucksReviews, reviews, reviewToMemberMap);
     }
@@ -95,9 +89,7 @@ public class ReviewService {
         memberRoomValidator.validateMemberInRoom(currentMember, room);
 
         List<Review> reviews = reviewRepository.findAllByRoom(room);
-
-        List<ReviewMember> reviewMembers = reviewMemberRepository.findAllByReviewIn(reviews);
-        Map<Long, ReviewMember> reviewToMemberMap = createReviewToReviewMemberMap(reviewMembers);
+        Map<Long, ReviewMember> reviewToMemberMap = createReviewToReviewMemberMap(reviews);
 
         List<StarbucksReview> starbucksReviews = starbucksReviewRepository.findAllByReviewIn(reviews);
         return getReviewListResponseDto(currentMember, starbucksReviews, reviews, reviewToMemberMap);
@@ -107,20 +99,15 @@ public class ReviewService {
         Member currentMember = memberRoomValidator.findMemberByEmail(email);
         Room room = memberRoomValidator.findRoomById(roomId);
         memberRoomValidator.validateMemberInRoom(currentMember, room);
-        Starbucks starbucks = findStarbucksById(starbucksId);
 
+        Starbucks starbucks = findStarbucksById(starbucksId);
         List<StarbucksReview> starbucksReviews = starbucksReviewRepository.findAllByStarbucksAndRoom(starbucks, room);
-        if (starbucksReviews.isEmpty()) {
-            return new ReviewListResponseDto(Collections.emptyList());
-        }
 
         List<Review> reviews = starbucksReviews.stream()
                 .map(StarbucksReview::getReview)
                 .toList();
+        Map<Long, ReviewMember> reviewToMemberMap = createReviewToReviewMemberMap(reviews);
 
-        Map<Long, ReviewMember> reviewToMemberMap = createReviewToReviewMemberMap(
-                reviewMemberRepository.findAllByReviewIn(reviews)
-        );
         return getReviewListResponseDto(currentMember, starbucksReviews, reviews, reviewToMemberMap);
     }
 
@@ -145,10 +132,10 @@ public class ReviewService {
     public void updateReview(String email, Long reviewId, ReviewRequestDto reviewRequestDto) {
         Member currentMember = memberRoomValidator.findMemberByEmail(email);
         Review review = findReviewById(reviewId);
-        ReviewMember reviewMember = reviewMemberRepository.findByReview(review)
-                .orElseThrow(() -> new ReviewMemberNotFoundException("리뷰 작성자 정보를 찾을 수 없습니다. reviewId: " + reviewId + "현재 사용자: " + currentMember.getId()));
+        ReviewMember reviewMember = findReviewMemberByReview(review);
 
         validateAuthorOfReview(currentMember, reviewMember);
+
         review.updateReview(reviewRequestDto.title(), reviewRequestDto.content());
     }
 
@@ -192,6 +179,7 @@ public class ReviewService {
 
         reviewLikeRepository.delete(reviewLike);
     }
+
 
     private Review findReviewById(Long reviewId) {
         return reviewRepository.findById(reviewId)
@@ -248,7 +236,8 @@ public class ReviewService {
                 .collect(Collectors.toMap(sr -> sr.getReview().getId(), sr -> sr));
     }
 
-    private Map<Long, ReviewMember> createReviewToReviewMemberMap(List<ReviewMember> reviewMembers) {
+    private Map<Long, ReviewMember> createReviewToReviewMemberMap(List<Review> reviews) {
+        List<ReviewMember> reviewMembers = reviewMemberRepository.findAllByReviewIn(reviews);
         return reviewMembers.stream()
                 .collect(Collectors.toMap(rm -> rm.getReview().getId(), rm -> rm));
     }
