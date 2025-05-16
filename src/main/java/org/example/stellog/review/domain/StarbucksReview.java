@@ -13,6 +13,7 @@ import org.example.stellog.starbucks.domain.Starbucks;
 public class StarbucksReview {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "starbucks_review_id")
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -24,7 +25,7 @@ public class StarbucksReview {
     private Starbucks starbucks;
 
     @Builder
-    public StarbucksReview(Review review, Starbucks starbucks) {
+    private StarbucksReview(Review review, Starbucks starbucks) {
         this.review = review;
         this.starbucks = starbucks;
     }

@@ -1,4 +1,4 @@
-package org.example.stellog.review.api.dto.respoonse;
+package org.example.stellog.review.api.dto.response;
 
 import lombok.Builder;
 

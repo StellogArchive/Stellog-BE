@@ -10,10 +10,10 @@ import org.example.stellog.member.domain.Member;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class ReviewMember {
+public class ReviewLike {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "review_member_id")
+    @Column(name = "review_like_id")
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -25,7 +25,7 @@ public class ReviewMember {
     private Review review;
 
     @Builder
-    private ReviewMember(Member member, Review review) {
+    private ReviewLike(Member member, Review review) {
         this.member = member;
         this.review = review;
     }
