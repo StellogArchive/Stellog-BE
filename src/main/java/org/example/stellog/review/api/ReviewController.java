@@ -57,7 +57,7 @@ public class ReviewController {
     }
 
     @Operation(
-            summary = "리뷰 목록 조회",
+            summary = "방과 스타벅스 별 리뷰 목록 조회",
             description = "방과 스타벅스 별 리뷰 목록을 조회합니다."
     )
     @GetMapping("{roomId}/{starbucksId}")

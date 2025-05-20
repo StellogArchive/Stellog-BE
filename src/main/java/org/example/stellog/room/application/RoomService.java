@@ -1,7 +1,7 @@
 package org.example.stellog.room.application;
 
 import lombok.RequiredArgsConstructor;
-import org.example.stellog.global.util.MemberRoomValidator;
+import org.example.stellog.global.util.MemberRoomService;
 import org.example.stellog.member.domain.Member;
 import org.example.stellog.member.exception.MemberNotFoundException;
 import org.example.stellog.member.repository.MemberRepository;
@@ -30,11 +30,11 @@ public class RoomService {
     private final RoomRepository roomRepository;
     private final MemberRepository memberRepository;
     private final RoomMemberRepository roomMemberRepository;
-    private final MemberRoomValidator memberRoomValidator;
+    private final MemberRoomService memberRoomService;
 
     @Transactional
     public void createRoom(String email, RoomRequestDto roomRequestDto) {
-        Member currentMember = memberRoomValidator.findMemberByEmail(email);
+        Member currentMember = memberRoomService.findMemberByEmail(email);
         List<Member> selectedMembers = memberRepository.findAllById(roomRequestDto.memberIdList());
 
         if (!selectedMembers.contains(currentMember)) {
@@ -59,7 +59,7 @@ public class RoomService {
     }
 
     public RoomListResponseDto getAllRoom(String email) {
-        Member currentMember = memberRoomValidator.findMemberByEmail(email);
+        Member currentMember = memberRoomService.findMemberByEmail(email);
         List<RoomMember> roomMembers = roomMemberRepository.findByMember(currentMember);
 
         List<RoomResponseDto> rooms = roomMembers.stream()
@@ -74,11 +74,11 @@ public class RoomService {
     }
 
     public RoomDetailResponseDto getRoomDetails(String email, Long roomId) {
-        Member currentMember = memberRoomValidator.findMemberByEmail(email);
-        Room room = memberRoomValidator.findRoomById(roomId);
+        Member currentMember = memberRoomService.findMemberByEmail(email);
+        Room room = memberRoomService.findRoomById(roomId);
         List<RoomMember> roomMembers = findRoomMemberByRoom(room);
 
-        memberRoomValidator.validateMemberInRoom(currentMember, room);
+        memberRoomService.validateMemberInRoom(currentMember, room);
 
         List<MemberInfoDto> memberDtos = roomMembers.stream()
                 .map(RoomMember::getMember)
@@ -90,8 +90,8 @@ public class RoomService {
 
     @Transactional
     public void updateRoom(String email, Long roomId, RoomRequestDto roomRequestDto) {
-        Member currentMember = memberRoomValidator.findMemberByEmail(email);
-        Room room = memberRoomValidator.findRoomById(roomId);
+        Member currentMember = memberRoomService.findMemberByEmail(email);
+        Room room = memberRoomService.findRoomById(roomId);
 
         checkRoomOwner(currentMember, room);
 
@@ -101,8 +101,8 @@ public class RoomService {
 
     @Transactional
     public void deleteRoom(String email, Long roomId) {
-        Member currentMember = memberRoomValidator.findMemberByEmail(email);
-        Room room = memberRoomValidator.findRoomById(roomId);
+        Member currentMember = memberRoomService.findMemberByEmail(email);
+        Room room = memberRoomService.findRoomById(roomId);
         List<RoomMember> roomMembers = findRoomMemberByRoom(room);
 
         checkRoomOwner(currentMember, room);
