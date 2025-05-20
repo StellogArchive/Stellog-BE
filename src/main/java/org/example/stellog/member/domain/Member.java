@@ -35,4 +35,8 @@ public class Member {
         this.userRole = userRole;
         this.provider = provider;
     }
+
+    public void update(String nickName) {
+        this.nickName = nickName;
+    }
 }
