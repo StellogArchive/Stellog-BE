@@ -19,11 +19,8 @@ public class Room {
 
     private boolean isPublic;
 
-//    @OneToMany(mappedBy = "room", cascade = CascadeType.ALL, orphanRemoval = true)
-//    private List<RoomMember> roomMembers = new ArrayList<>();
-
     @Builder
-    public Room(String name, boolean isPublic) {
+    private Room(String name, boolean isPublic) {
         this.name = name;
         this.isPublic = isPublic;
     }
@@ -32,8 +29,4 @@ public class Room {
         this.name = name;
         this.isPublic = isPublic;
     }
-
-//    public void addMemberRoom(RoomMember roomMember) {
-//        this.roomMembers.add(roomMember);
-//    }
 }

@@ -13,6 +13,7 @@ import org.example.stellog.member.domain.Member;
 import org.example.stellog.member.domain.UserRole;
 import org.example.stellog.member.repository.MemberRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.reactive.function.client.WebClient;
 
 @Service
@@ -32,6 +33,7 @@ public class OAuthService {
         };
     }
 
+    @Transactional
     public TokenDto handleOAuthLogin(String provider, String code) {
         String idToken = getIdToken(provider, code);
         UserInfo claims = parserIdTokne(idToken);
@@ -70,9 +72,8 @@ public class OAuthService {
         }
     }
 
-
     private Member getOrCreateMember(OAuthUserInfo userInfo, String provider) {
-        return memberRepository.findByEmail(userInfo.getEmail())
+        Member member = memberRepository.findByEmail(userInfo.getEmail())
                 .orElseGet(() -> memberRepository.save(
                         Member.builder()
                                 .email(userInfo.getEmail())
@@ -81,5 +82,9 @@ public class OAuthService {
                                 .userRole(UserRole.ROLE_USER)
                                 .build()
                 ));
+
+        memberRepository.flush();  // 추가
+        System.out.println("저장된 member: " + member.getId());
+        return member;
     }
 }
