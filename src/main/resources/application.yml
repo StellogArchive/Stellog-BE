@@ -11,6 +11,15 @@ spring:
     username: ${spring.datasource.username}
     password: ${spring.datasource.password}
 
+  cloud:
+    gcp:
+      storage:
+        bucket:
+          name: ${spring.cloud.gcp.storage.bucket.name}
+        credentials:
+          path: ${spring.cloud.gcp.storage.credentials.path}
+    project-id: ${spring.cloud.gcp.project-id}
+
   jpa:
     database: mysql
     database-platform: org.hibernate.dialect.MySQL8Dialect
