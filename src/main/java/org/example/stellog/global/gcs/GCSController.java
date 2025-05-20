@@ -1,5 +1,7 @@
 package org.example.stellog.global.gcs;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.example.stellog.global.annotation.AuthenticatedEmail;
 import org.example.stellog.global.template.RspTemplate;
@@ -10,9 +12,14 @@ import org.springframework.web.multipart.MultipartFile;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("api/v1/image")
+@Tag(name = "이미지 GCS", description = "이미지 GCS 관련 API")
 public class GCSController {
     private final GCSService gcsService;
 
+    @Operation(
+            summary = "이미지 업로드",
+            description = "이미지를 업로드합니다."
+    )
     @PostMapping()
     public RspTemplate<String> upload(@AuthenticatedEmail String email, @RequestParam("file") MultipartFile file) {
         try {
@@ -29,6 +36,10 @@ public class GCSController {
         }
     }
 
+    @Operation(
+            summary = "이미지 삭제",
+            description = "이미지를 삭제합니다."
+    )
     @DeleteMapping()
     public RspTemplate<String> delete(@AuthenticatedEmail String email, @RequestParam("fileName") String fileName) {
         try {
