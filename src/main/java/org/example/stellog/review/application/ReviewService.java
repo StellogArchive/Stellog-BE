@@ -1,7 +1,7 @@
 package org.example.stellog.review.application;
 
 import lombok.RequiredArgsConstructor;
-import org.example.stellog.global.util.MemberRoomValidator;
+import org.example.stellog.global.util.MemberRoomService;
 import org.example.stellog.member.domain.Member;
 import org.example.stellog.review.api.dto.request.ReviewRequestDto;
 import org.example.stellog.review.api.dto.response.ReviewListResponseDto;
@@ -34,7 +34,7 @@ import java.util.stream.Collectors;
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class ReviewService {
-    private final MemberRoomValidator memberRoomValidator;
+    private final MemberRoomService memberRoomService;
     private final ReviewRepository reviewRepository;
     private final StarbucksRepository starbucksRepository;
     private final StarbucksReviewRepository starbucksReviewRepository;
@@ -43,9 +43,9 @@ public class ReviewService {
 
     @Transactional
     public void createReview(String email, Long roomId, ReviewRequestDto reviewRequestDto) {
-        Member currentMember = memberRoomValidator.findMemberByEmail(email);
-        Room room = memberRoomValidator.findRoomById(roomId);
-        memberRoomValidator.validateMemberInRoom(currentMember, room);
+        Member currentMember = memberRoomService.findMemberByEmail(email);
+        Room room = memberRoomService.findRoomById(roomId);
+        memberRoomService.validateMemberInRoom(currentMember, room);
         Starbucks starbucks = findStarbucksById(reviewRequestDto.starbucksId());
 
         Review review = Review.builder()
@@ -69,7 +69,7 @@ public class ReviewService {
     }
 
     public ReviewListResponseDto getAllReviewsByStarbucksId(String email, Long starbucksId) {
-        Member currentMember = memberRoomValidator.findMemberByEmail(email);
+        Member currentMember = memberRoomService.findMemberByEmail(email);
         Starbucks starbucks = findStarbucksById(starbucksId);
 
         List<StarbucksReview> starbucksReviews = starbucksReviewRepository.findAllByStarbucks(starbucks);
@@ -84,9 +84,9 @@ public class ReviewService {
 
 
     public ReviewListResponseDto getAllReviewsByRoomId(String email, Long roomId) {
-        Member currentMember = memberRoomValidator.findMemberByEmail(email);
-        Room room = memberRoomValidator.findRoomById(roomId);
-        memberRoomValidator.validateMemberInRoom(currentMember, room);
+        Member currentMember = memberRoomService.findMemberByEmail(email);
+        Room room = memberRoomService.findRoomById(roomId);
+        memberRoomService.validateMemberInRoom(currentMember, room);
 
         List<Review> reviews = reviewRepository.findAllByRoom(room);
         Map<Long, ReviewMember> reviewToMemberMap = createReviewToReviewMemberMap(reviews);
@@ -96,9 +96,9 @@ public class ReviewService {
     }
 
     public ReviewListResponseDto getReviewsByRoomIdAndStarbucksId(String email, Long roomId, Long starbucksId) {
-        Member currentMember = memberRoomValidator.findMemberByEmail(email);
-        Room room = memberRoomValidator.findRoomById(roomId);
-        memberRoomValidator.validateMemberInRoom(currentMember, room);
+        Member currentMember = memberRoomService.findMemberByEmail(email);
+        Room room = memberRoomService.findRoomById(roomId);
+        memberRoomService.validateMemberInRoom(currentMember, room);
 
         Starbucks starbucks = findStarbucksById(starbucksId);
         List<StarbucksReview> starbucksReviews = starbucksReviewRepository.findAllByStarbucksAndRoom(starbucks, room);
@@ -112,7 +112,7 @@ public class ReviewService {
     }
 
     public ReviewResponseDto getReviewById(String email, Long reviewId) {
-        Member currentMember = memberRoomValidator.findMemberByEmail(email);
+        Member currentMember = memberRoomService.findMemberByEmail(email);
         Review review = findReviewById(reviewId);
         ReviewMember reviewMember = findReviewMemberByReview(review);
         StarbucksReview starbucksReview = findStarbucksReviewByReview(review);
@@ -130,7 +130,7 @@ public class ReviewService {
 
     @Transactional
     public void updateReview(String email, Long reviewId, ReviewRequestDto reviewRequestDto) {
-        Member currentMember = memberRoomValidator.findMemberByEmail(email);
+        Member currentMember = memberRoomService.findMemberByEmail(email);
         Review review = findReviewById(reviewId);
         ReviewMember reviewMember = findReviewMemberByReview(review);
 
@@ -141,7 +141,7 @@ public class ReviewService {
 
     @Transactional
     public void deleteReview(String email, Long reviewId) {
-        Member currentMember = memberRoomValidator.findMemberByEmail(email);
+        Member currentMember = memberRoomService.findMemberByEmail(email);
         Review review = findReviewById(reviewId);
         StarbucksReview starbucksReview = findStarbucksReviewByReview(review);
         ReviewMember reviewMember = findReviewMemberByReview(review);
@@ -156,7 +156,7 @@ public class ReviewService {
 
     @Transactional
     public void likeReview(String email, Long reviewId) {
-        Member currentMember = memberRoomValidator.findMemberByEmail(email);
+        Member currentMember = memberRoomService.findMemberByEmail(email);
         Review review = findReviewById(reviewId);
 
         if (reviewLikeRepository.existsByMemberAndReview(currentMember, review)) {
@@ -172,7 +172,7 @@ public class ReviewService {
 
     @Transactional
     public void unlikeReview(String email, Long reviewId) {
-        Member currentMember = memberRoomValidator.findMemberByEmail(email);
+        Member currentMember = memberRoomService.findMemberByEmail(email);
         Review review = findReviewById(reviewId);
         ReviewLike reviewLike = reviewLikeRepository.findByMemberAndReview(currentMember, review)
                 .orElseThrow(() -> new ReviewNotFoundException("해당 리뷰의 좋아요 정보를 찾을 수 없습니다. reviewId: " + reviewId));
