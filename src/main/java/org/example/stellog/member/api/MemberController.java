@@ -1,5 +1,6 @@
 package org.example.stellog.member.api;
 
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.example.stellog.global.annotation.AuthenticatedEmail;
@@ -17,6 +18,10 @@ import org.springframework.web.bind.annotation.*;
 public class MemberController {
     private final MemberService memberService;
 
+    @Operation(
+            summary = "회원 정보 수정",
+            description = "회원 정보를 수정합니다. (닉네임)"
+    )
     @PutMapping
     public RspTemplate<String> updateMember(@AuthenticatedEmail String email, @RequestBody MemberUpdateRequestDto memberUpdateRequestDto) {
         memberService.updateMember(email, memberUpdateRequestDto);
@@ -26,6 +31,10 @@ public class MemberController {
         );
     }
 
+    @Operation(
+            summary = "회원 정보 조회",
+            description = "회원 정보를 조회합니다."
+    )
     @GetMapping
     public RspTemplate<MemberInfoDto> getMember(@AuthenticatedEmail String email) {
         return new RspTemplate<>(

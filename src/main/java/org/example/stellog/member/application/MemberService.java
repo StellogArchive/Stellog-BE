@@ -17,19 +17,21 @@ public class MemberService {
 
     @Transactional
     public void updateMember(String email, MemberUpdateRequestDto memberUpdateRequestDto) {
-        // TODO: MemberRoomService
-        Member member = memberRepository.findByEmail(email)
-                .orElseThrow(MemberNotFoundException::new);
+        Member member = findMemberByEmail(email);
         member.update(memberUpdateRequestDto.nickName());
     }
 
     public MemberInfoDto getMember(String email) {
-        Member member = memberRepository.findByEmail(email)
-                .orElseThrow(MemberNotFoundException::new);
+        Member member = findMemberByEmail(email);
         return new MemberInfoDto(member.getId(),
                 member.getName(),
                 member.getNickName(),
                 member.getEmail()
         );
+    }
+
+    private Member findMemberByEmail(String email) {
+        return memberRepository.findByEmail(email)
+                .orElseThrow(MemberNotFoundException::new);
     }
 }
