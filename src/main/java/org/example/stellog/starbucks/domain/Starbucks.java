@@ -15,6 +15,7 @@ import lombok.NoArgsConstructor;
 public class Starbucks {
     @Id
     private Long id;
+
     private String name;
     private String address;
     private double latitude;
