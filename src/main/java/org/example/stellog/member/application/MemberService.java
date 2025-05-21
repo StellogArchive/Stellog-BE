@@ -26,7 +26,6 @@ public class MemberService {
         member.updateProfileImgUrl(profileImgUrl);
     }
 
-
     public MemberInfoDto getMember(String email) {
         Member member = memberRoomService.findMemberByEmail(email);
         return new MemberInfoDto(member.getId(),
