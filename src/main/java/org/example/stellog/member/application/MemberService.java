@@ -1,11 +1,10 @@
 package org.example.stellog.member.application;
 
 import lombok.RequiredArgsConstructor;
+import org.example.stellog.global.util.MemberRoomService;
 import org.example.stellog.member.api.dto.request.MemberUpdateRequestDto;
 import org.example.stellog.member.api.dto.response.MemberInfoDto;
 import org.example.stellog.member.domain.Member;
-import org.example.stellog.member.exception.MemberNotFoundException;
-import org.example.stellog.member.repository.MemberRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -13,26 +12,28 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class MemberService {
-    private final MemberRepository memberRepository;
+    private final MemberRoomService memberRoomService;
 
     @Transactional
     public void updateMemberNickNme(String email, MemberUpdateRequestDto memberUpdateRequestDto) {
-        Member member = findMemberByEmail(email);
+        Member member = memberRoomService.findMemberByEmail(email);
         member.updateNickName(memberUpdateRequestDto.nickName());
     }
 
+    @Transactional
+    public void updateMemberProfileImg(String email, String profileImgUrl) {
+        Member member = memberRoomService.findMemberByEmail(email);
+        member.updateProfileImgUrl(profileImgUrl);
+    }
+
+
     public MemberInfoDto getMember(String email) {
-        Member member = findMemberByEmail(email);
+        Member member = memberRoomService.findMemberByEmail(email);
         return new MemberInfoDto(member.getId(),
                 member.getName(),
                 member.getNickName(),
                 member.getEmail(),
                 member.getProfileImgUrl()
         );
-    }
-
-    private Member findMemberByEmail(String email) {
-        return memberRepository.findByEmail(email)
-                .orElseThrow(MemberNotFoundException::new);
     }
 }
