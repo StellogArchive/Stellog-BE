@@ -17,7 +17,7 @@ spring:
         bucket:
           name: ${spring.cloud.gcp.storage.bucket.name}
         credentials:
-          path: ${spring.cloud.gcp.storage.credentials.path}
+          location: ${spring.cloud.gcp.storage.credentials.location}
     project-id: ${spring.cloud.gcp.project-id}
 
   jpa:
