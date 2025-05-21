@@ -32,7 +32,7 @@ public class MemberController {
         memberService.updateMemberNickNme(email, memberUpdateRequestDto);
         return new RspTemplate<>(
                 HttpStatus.OK,
-                "회원 정보가 성공적으로 수정되었습니다."
+                "회원 닉네임이 성공적으로 수정되었습니다."
         );
     }
 
