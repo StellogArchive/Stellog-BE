@@ -4,6 +4,7 @@ public record MemberInfoDto(
         Long id,
         String name,
         String nickName,
-        String email
+        String email,
+        String imageUrl
 ) {
 }

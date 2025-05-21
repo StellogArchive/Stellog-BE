@@ -16,9 +16,9 @@ public class MemberService {
     private final MemberRepository memberRepository;
 
     @Transactional
-    public void updateMember(String email, MemberUpdateRequestDto memberUpdateRequestDto) {
+    public void updateMemberNickNme(String email, MemberUpdateRequestDto memberUpdateRequestDto) {
         Member member = findMemberByEmail(email);
-        member.update(memberUpdateRequestDto.nickName());
+        member.updateNickName(memberUpdateRequestDto.nickName());
     }
 
     public MemberInfoDto getMember(String email) {
@@ -26,7 +26,8 @@ public class MemberService {
         return new MemberInfoDto(member.getId(),
                 member.getName(),
                 member.getNickName(),
-                member.getEmail()
+                member.getEmail(),
+                member.getProfileImgUrl()
         );
     }
 

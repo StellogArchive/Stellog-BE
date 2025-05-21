@@ -26,17 +26,20 @@ public class Member {
 
     private String provider;
 
+    private String profileImgUrl;
+
     @Builder
     private Member(String name, String nickName, String email, UserRole userRole,
-                   String provider) {
+                   String provider, String profileImgUrl) {
         this.name = name;
         this.nickName = nickName;
         this.email = email;
         this.userRole = userRole;
         this.provider = provider;
+        this.profileImgUrl = profileImgUrl;
     }
 
-    public void update(String nickName) {
+    public void updateNickName(String nickName) {
         this.nickName = nickName;
     }
 }

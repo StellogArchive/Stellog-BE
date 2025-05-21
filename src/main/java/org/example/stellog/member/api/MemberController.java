@@ -19,12 +19,12 @@ public class MemberController {
     private final MemberService memberService;
 
     @Operation(
-            summary = "회원 정보 수정",
-            description = "회원 정보를 수정합니다. (닉네임)"
+            summary = "회원 닉네임 수정",
+            description = "회원 닉네임을 수정합니다"
     )
-    @PutMapping
-    public RspTemplate<String> updateMember(@AuthenticatedEmail String email, @RequestBody MemberUpdateRequestDto memberUpdateRequestDto) {
-        memberService.updateMember(email, memberUpdateRequestDto);
+    @PutMapping("/nickname")
+    public RspTemplate<String> updateMemberNickName(@AuthenticatedEmail String email, @RequestBody MemberUpdateRequestDto memberUpdateRequestDto) {
+        memberService.updateMemberNickNme(email, memberUpdateRequestDto);
         return new RspTemplate<>(
                 HttpStatus.OK,
                 "회원 정보가 성공적으로 수정되었습니다."
@@ -35,7 +35,7 @@ public class MemberController {
             summary = "회원 정보 조회",
             description = "회원 정보를 조회합니다."
     )
-    @GetMapping
+    @GetMapping("/info")
     public RspTemplate<MemberInfoDto> getMember(@AuthenticatedEmail String email) {
         return new RspTemplate<>(
                 HttpStatus.OK,
