@@ -44,5 +44,5 @@ out/
 .DS_Store
 
 ### stellog~.json ###
-/**/main/resources/stellog-456414-59acc77473b5.json
-stellog-456414-59acc77473b5.json
+/**/main/resources/gcp-credentials.json
+gcp-credentials.json
