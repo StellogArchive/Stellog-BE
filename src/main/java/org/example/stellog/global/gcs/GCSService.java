@@ -30,7 +30,7 @@ public class GCSService {
 
         storage.create(blobInfo, file.getBytes());
 
-        return fileName; // 저장된 파일명 반환
+        return "https://storage.googleapis.com/" + bucketName + "/" + fileName;
     }
 
     public void deleteFile(String email, String fileName) {
