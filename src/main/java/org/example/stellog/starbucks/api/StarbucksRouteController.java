@@ -34,8 +34,8 @@ public class StarbucksRouteController {
             description = "방 별 스타벅스 최적화 동선 리스트를 조회합니다."
     )
     @GetMapping("room/{roomId}")
-    public RspTemplate<StarbucksRouteListResponseDto> getRoute(@AuthenticatedEmail String email, @PathVariable Long roomId) {
-        StarbucksRouteListResponseDto route = starbucksRouteService.getRouteStarbucksIds(email, roomId);
+    public RspTemplate<StarbucksRouteListResponseDto> getRouteByRoomId(@AuthenticatedEmail String email, @PathVariable Long roomId) {
+        StarbucksRouteListResponseDto route = starbucksRouteService.getRouteByRoomId(email, roomId);
         return new RspTemplate<>(HttpStatus.OK, "스타벅스 최적화 동선을 성공적으로 조회하였습니다.", route);
     }
 
@@ -44,8 +44,8 @@ public class StarbucksRouteController {
             description = "주어진 스타벅스 최적화 동선 상세 정보를 조회합니다."
     )
     @GetMapping("route/{routeId}")
-    public RspTemplate<StarbucksRouteResponseDto> getRouteById(@AuthenticatedEmail String email, @PathVariable Long routeId) {
-        StarbucksRouteResponseDto route = starbucksRouteService.getRouteById(email, routeId);
+    public RspTemplate<StarbucksRouteResponseDto> getRouteByRouteId(@AuthenticatedEmail String email, @PathVariable Long routeId) {
+        StarbucksRouteResponseDto route = starbucksRouteService.getRouteByRouteId(email, routeId);
         return new RspTemplate<>(HttpStatus.OK, "스타벅스 최적화 동선을 성공적으로 조회하였습니다.", route);
     }
 

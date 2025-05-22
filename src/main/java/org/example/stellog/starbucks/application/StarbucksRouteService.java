@@ -6,6 +6,7 @@ import org.example.stellog.global.util.MemberRoomService;
 import org.example.stellog.member.domain.Member;
 import org.example.stellog.room.domain.Room;
 import org.example.stellog.starbucks.api.dto.request.StarbucksRouteRequestDto;
+import org.example.stellog.starbucks.api.dto.response.StarbucksInfoResponseDto;
 import org.example.stellog.starbucks.api.dto.response.StarbucksRouteListResponseDto;
 import org.example.stellog.starbucks.api.dto.response.StarbucksRouteResponseDto;
 import org.example.stellog.starbucks.domain.Starbucks;
@@ -68,7 +69,7 @@ public class StarbucksRouteService {
         return route.getId();
     }
 
-    public StarbucksRouteListResponseDto getRouteStarbucksIds(String email, Long roomId) {
+    public StarbucksRouteListResponseDto getRouteByRoomId(String email, Long roomId) {
         Member member = memberRoomService.findMemberByEmail(email);
         Room room = memberRoomService.findRoomById(roomId);
         memberRoomService.validateMemberInRoom(member, room);
@@ -81,19 +82,22 @@ public class StarbucksRouteService {
         List<StarbucksRouteResponseDto> routeResponses = new ArrayList<>();
         for (StarbucksRoute route : routes) {
             List<StarbucksRouteItem> items = starbucksRouteItemRepository.findByStarbucksRouteOrderBySequenceOrder(route);
-            routeResponses.add(new StarbucksRouteResponseDto(route.getName(), extractStarbucksIds(items)));
+            List<StarbucksInfoResponseDto> starbucksDtos = convertToDtos(items);
+            routeResponses.add(new StarbucksRouteResponseDto(route.getName(), starbucksDtos));
         }
 
         return new StarbucksRouteListResponseDto(routeResponses);
     }
 
-    public StarbucksRouteResponseDto getRouteById(String email, Long routeId) {
+    public StarbucksRouteResponseDto getRouteByRouteId(String email, Long routeId) {
         Member member = memberRoomService.findMemberByEmail(email);
         StarbucksRoute route = findStarbucksRouteById(routeId);
         memberRoomService.validateMemberInRoom(member, route.getRoom());
 
         List<StarbucksRouteItem> items = starbucksRouteItemRepository.findByStarbucksRouteOrderBySequenceOrder(route);
-        return new StarbucksRouteResponseDto(route.getName(), extractStarbucksIds(items));
+        List<StarbucksInfoResponseDto> starbucksDtos = convertToDtos(items);
+
+        return new StarbucksRouteResponseDto(route.getName(), starbucksDtos);
     }
 
     @Transactional
@@ -151,5 +155,14 @@ public class StarbucksRouteService {
     private StarbucksRoute findStarbucksRouteById(Long routeId) {
         return starbucksRouteRepository.findById(routeId)
                 .orElseThrow(() -> new StarbucksRouteNotFoundException("해당 경로가 존재하지 않습니다. routeId=" + routeId));
+    }
+
+    private List<StarbucksInfoResponseDto> convertToDtos(List<StarbucksRouteItem> items) {
+        return items.stream()
+                .map(item -> {
+                    Starbucks s = item.getStarbucks();
+                    return new StarbucksInfoResponseDto(s.getId(), s.getName(), s.getLatitude(), s.getLongitude());
+                })
+                .toList();
     }
 }
