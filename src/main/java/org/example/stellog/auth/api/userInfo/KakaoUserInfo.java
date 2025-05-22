@@ -21,5 +21,10 @@ public class KakaoUserInfo implements OAuthUserInfo {
     public String getProvider() {
         return "kakao";
     }
+
+    @Override
+    public String getPicture() {
+        return attributes.picture();
+    }
 }
 

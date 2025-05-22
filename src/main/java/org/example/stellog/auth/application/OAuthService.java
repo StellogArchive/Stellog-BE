@@ -1,6 +1,7 @@
 package org.example.stellog.auth.application;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.example.stellog.auth.api.userInfo.OAuthUserInfo;
 import org.example.stellog.auth.api.userInfo.UserInfo;
 import org.example.stellog.auth.client.GoogleOAuthClient;
@@ -14,14 +15,13 @@ import org.example.stellog.member.domain.UserRole;
 import org.example.stellog.member.domain.repository.MemberRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.reactive.function.client.WebClient;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class OAuthService {
     private final JwtProvider jwtProvider;
     private final MemberRepository memberRepository;
-    private final WebClient webClient;
     private final GoogleOAuthClient googleOAuthClient;
     private final KakaoOAuthClient kakaoOAuthClient;
 
@@ -49,8 +49,7 @@ public class OAuthService {
                 case "google" -> googleOAuthClient.getIdToken(code);
                 case "kakao" -> kakaoOAuthClient.getIdToken(code);
                 default -> throw new UnsupportedProviderException(provider);
-            }
-                    ;
+            };
         } catch (Exception e) {
             throw new OAuthLoginFailedException(e.getMessage());
         }
@@ -80,10 +79,11 @@ public class OAuthService {
                                 .name(userInfo.getName())
                                 .provider(provider)
                                 .userRole(UserRole.ROLE_USER)
+                                .profileImgUrl(userInfo.getPicture())
                                 .build()
                 ));
 
-        memberRepository.flush();  // 추가
+        memberRepository.flush();
         System.out.println("저장된 member: " + member.getId());
         return member;
     }
