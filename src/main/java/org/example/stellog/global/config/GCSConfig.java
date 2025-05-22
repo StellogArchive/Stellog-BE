@@ -15,7 +15,7 @@ import java.io.InputStream;
 @Configuration
 @Component
 public class GCSConfig {
-    @Value("${spring.cloud.gcp.storage.credentials.path}")
+    @Value("${spring.cloud.gcp.storage.credentials.location}")
     private String credentialJson;
 
     @Bean

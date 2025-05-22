@@ -19,9 +19,9 @@ import org.example.stellog.review.exception.ReviewMemberNotFoundException;
 import org.example.stellog.review.exception.ReviewNotFoundException;
 import org.example.stellog.review.exception.UnauthorizedReviewAccessException;
 import org.example.stellog.room.domain.Room;
-import org.example.stellog.starbucks.StarbucksNotFoundException;
 import org.example.stellog.starbucks.domain.Starbucks;
 import org.example.stellog.starbucks.domain.repository.StarbucksRepository;
+import org.example.stellog.starbucks.exception.StarbucksNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 

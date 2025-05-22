@@ -1,4 +1,4 @@
-package org.example.stellog.starbucks;
+package org.example.stellog.starbucks.exception;
 
 import org.example.stellog.global.error.exception.NotFoundGroupException;
 
