@@ -40,7 +40,7 @@ public class RoomController {
         return new RspTemplate<>(
                 HttpStatus.OK,
                 "로그인 한 사용자가 생성한 방 목록을 성공적으로 조회하였습니다.",
-                roomService.getAllRoom(email));
+                roomService.getAllRoomByEmail(email));
     }
 
     @Operation(

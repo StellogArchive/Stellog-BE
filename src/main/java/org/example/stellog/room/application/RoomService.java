@@ -5,6 +5,7 @@ import org.example.stellog.global.util.MemberRoomService;
 import org.example.stellog.member.domain.Member;
 import org.example.stellog.member.domain.repository.MemberRepository;
 import org.example.stellog.member.exception.MemberNotFoundException;
+import org.example.stellog.review.domain.repository.ReviewRepository;
 import org.example.stellog.room.api.dto.request.RoomRequestDto;
 import org.example.stellog.room.api.dto.response.MemberInfoDto;
 import org.example.stellog.room.api.dto.response.RoomDetailResponseDto;
@@ -31,6 +32,7 @@ public class RoomService {
     private final MemberRepository memberRepository;
     private final RoomMemberRepository roomMemberRepository;
     private final MemberRoomService memberRoomService;
+    private final ReviewRepository reviewRepository;
 
     @Transactional
     public void createRoom(String email, RoomRequestDto roomRequestDto) {
@@ -58,7 +60,7 @@ public class RoomService {
         }
     }
 
-    public RoomListResponseDto getAllRoom(String email) {
+    public RoomListResponseDto getAllRoomByEmail(String email) {
         Member currentMember = memberRoomService.findMemberByEmail(email);
         List<RoomMember> roomMembers = roomMemberRepository.findByMember(currentMember);
 
@@ -66,12 +68,20 @@ public class RoomService {
                 .map(RoomMember::getRoom)
                 .map(room -> {
                     int memberCount = roomMemberRepository.countByRoom(room);
-                    return new RoomResponseDto(room.getId(), room.getName(), memberCount);
+                    long visitedStarbucksCount = reviewRepository.countDistinctStarbucksByRoomId(room.getId());
+
+                    return new RoomResponseDto(
+                            room.getId(),
+                            room.getName(),
+                            memberCount,
+                            visitedStarbucksCount
+                    );
                 })
                 .toList();
 
         return new RoomListResponseDto(rooms);
     }
+
 
     public RoomDetailResponseDto getRoomDetails(String email, Long roomId) {
         Member currentMember = memberRoomService.findMemberByEmail(email);
