@@ -2,8 +2,8 @@ package org.example.stellog.global.util;
 
 import lombok.RequiredArgsConstructor;
 import org.example.stellog.member.domain.Member;
+import org.example.stellog.member.domain.repository.MemberRepository;
 import org.example.stellog.member.exception.MemberNotFoundException;
-import org.example.stellog.member.repository.MemberRepository;
 import org.example.stellog.room.domain.Room;
 import org.example.stellog.room.domain.repository.RoomMemberRepository;
 import org.example.stellog.room.domain.repository.RoomRepository;

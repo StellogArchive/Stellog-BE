@@ -11,7 +11,7 @@ import org.example.stellog.global.jwt.JwtProvider;
 import org.example.stellog.global.jwt.dto.TokenDto;
 import org.example.stellog.member.domain.Member;
 import org.example.stellog.member.domain.UserRole;
-import org.example.stellog.member.repository.MemberRepository;
+import org.example.stellog.member.domain.repository.MemberRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.reactive.function.client.WebClient;
