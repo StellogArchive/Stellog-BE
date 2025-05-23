@@ -1,4 +1,4 @@
-package org.example.stellog.global.gcs;
+package org.example.stellog.gcs.application;
 
 import com.google.cloud.storage.BlobId;
 import com.google.cloud.storage.BlobInfo;

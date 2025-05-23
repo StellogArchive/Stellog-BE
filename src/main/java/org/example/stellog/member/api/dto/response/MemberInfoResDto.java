@@ -1,6 +1,6 @@
 package org.example.stellog.member.api.dto.response;
 
-public record MemberInfoDto(
+public record MemberInfoResDto(
         Long id,
         String name,
         String nickName,

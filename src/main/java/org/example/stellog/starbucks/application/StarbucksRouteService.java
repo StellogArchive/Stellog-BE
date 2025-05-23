@@ -5,10 +5,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.example.stellog.global.util.MemberRoomService;
 import org.example.stellog.member.domain.Member;
 import org.example.stellog.room.domain.Room;
-import org.example.stellog.starbucks.api.dto.request.StarbucksRouteRequestDto;
-import org.example.stellog.starbucks.api.dto.response.StarbucksInfoResponseDto;
-import org.example.stellog.starbucks.api.dto.response.StarbucksRouteListResponseDto;
-import org.example.stellog.starbucks.api.dto.response.StarbucksRouteResponseDto;
+import org.example.stellog.starbucks.api.dto.request.StarbucksRouteReqDto;
+import org.example.stellog.starbucks.api.dto.response.StarbucksInfoResDto;
+import org.example.stellog.starbucks.api.dto.response.StarbucksRouteListResDto;
+import org.example.stellog.starbucks.api.dto.response.StarbucksRouteResDto;
 import org.example.stellog.starbucks.domain.Starbucks;
 import org.example.stellog.starbucks.domain.StarbucksRoute;
 import org.example.stellog.starbucks.domain.StarbucksRouteItem;
@@ -34,7 +34,7 @@ public class StarbucksRouteService {
     private final StarbucksRouteOptimizer starbucksRouteOptimizer;
 
     @Transactional
-    public Long createOptimizedRoute(String email, Long roomId, StarbucksRouteRequestDto requestDto) {
+    public Long createOptimizedRoute(String email, Long roomId, StarbucksRouteReqDto requestDto) {
         Member member = memberRoomService.findMemberByEmail(email);
         Room room = memberRoomService.findRoomById(roomId);
         memberRoomService.validateMemberInRoom(member, room);
@@ -69,7 +69,7 @@ public class StarbucksRouteService {
         return route.getId();
     }
 
-    public StarbucksRouteListResponseDto getRouteByRoomId(String email, Long roomId) {
+    public StarbucksRouteListResDto getRouteByRoomId(String email, Long roomId) {
         Member member = memberRoomService.findMemberByEmail(email);
         Room room = memberRoomService.findRoomById(roomId);
         memberRoomService.validateMemberInRoom(member, room);
@@ -79,29 +79,29 @@ public class StarbucksRouteService {
             throw new StarbucksRouteNotFoundException("해당 방에 연결된 경로가 없습니다. roomId=" + roomId);
         }
 
-        List<StarbucksRouteResponseDto> routeResponses = new ArrayList<>();
+        List<StarbucksRouteResDto> routeResponses = new ArrayList<>();
         for (StarbucksRoute route : routes) {
             List<StarbucksRouteItem> items = starbucksRouteItemRepository.findByStarbucksRouteOrderBySequenceOrder(route);
-            List<StarbucksInfoResponseDto> starbucksDtos = convertToDtos(items);
-            routeResponses.add(new StarbucksRouteResponseDto(route.getName(), starbucksDtos));
+            List<StarbucksInfoResDto> starbucksDtos = convertToDtos(items);
+            routeResponses.add(new StarbucksRouteResDto(route.getName(), starbucksDtos));
         }
 
-        return new StarbucksRouteListResponseDto(routeResponses);
+        return new StarbucksRouteListResDto(routeResponses);
     }
 
-    public StarbucksRouteResponseDto getRouteByRouteId(String email, Long routeId) {
+    public StarbucksRouteResDto getRouteByRouteId(String email, Long routeId) {
         Member member = memberRoomService.findMemberByEmail(email);
         StarbucksRoute route = findStarbucksRouteById(routeId);
         memberRoomService.validateMemberInRoom(member, route.getRoom());
 
         List<StarbucksRouteItem> items = starbucksRouteItemRepository.findByStarbucksRouteOrderBySequenceOrder(route);
-        List<StarbucksInfoResponseDto> starbucksDtos = convertToDtos(items);
+        List<StarbucksInfoResDto> starbucksDtos = convertToDtos(items);
 
-        return new StarbucksRouteResponseDto(route.getName(), starbucksDtos);
+        return new StarbucksRouteResDto(route.getName(), starbucksDtos);
     }
 
     @Transactional
-    public void updateRoute(String email, Long routeId, StarbucksRouteRequestDto dto) {
+    public void updateRoute(String email, Long routeId, StarbucksRouteReqDto dto) {
         Member member = memberRoomService.findMemberByEmail(email);
         StarbucksRoute route = findStarbucksRouteById(routeId);
         memberRoomService.validateMemberInRoom(member, route.getRoom());
@@ -157,11 +157,11 @@ public class StarbucksRouteService {
                 .orElseThrow(() -> new StarbucksRouteNotFoundException("해당 경로가 존재하지 않습니다. routeId=" + routeId));
     }
 
-    private List<StarbucksInfoResponseDto> convertToDtos(List<StarbucksRouteItem> items) {
+    private List<StarbucksInfoResDto> convertToDtos(List<StarbucksRouteItem> items) {
         return items.stream()
                 .map(item -> {
                     Starbucks s = item.getStarbucks();
-                    return new StarbucksInfoResponseDto(s.getId(), s.getName(), s.getLatitude(), s.getLongitude());
+                    return new StarbucksInfoResDto(s.getId(), s.getName(), s.getLatitude(), s.getLongitude());
                 })
                 .toList();
     }

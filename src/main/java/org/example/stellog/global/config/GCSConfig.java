@@ -3,7 +3,7 @@ package org.example.stellog.global.config;
 import com.google.auth.oauth2.GoogleCredentials;
 import com.google.cloud.storage.Storage;
 import com.google.cloud.storage.StorageOptions;
-import org.example.stellog.global.gcs.exception.GCSFileNotFoundException;
+import org.example.stellog.gcs.exception.GCSFileNotFoundException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
