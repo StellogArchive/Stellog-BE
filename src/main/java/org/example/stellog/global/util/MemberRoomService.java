@@ -34,4 +34,9 @@ public class MemberRoomService {
         return roomRepository.findById(roomId)
                 .orElseThrow(RoomNotFoundException::new);
     }
+
+    public Member findMemberById(Long memberId) {
+        return memberRepository.findById(memberId)
+                .orElseThrow(MemberNotFoundException::new);
+    }
 }
