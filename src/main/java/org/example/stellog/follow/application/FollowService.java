@@ -62,7 +62,7 @@ public class FollowService {
         return new FollowListResponseDto(followingDtoList);
     }
 
-    public MemberInfoDto getFollowers(String email, Long followerId) {
+    public MemberInfoDto getFollowerDetail(String email, Long followerId) {
         Member currentMember = memberRoomService.findMemberByEmail(email);
         Member follower = memberRoomService.findMemberById(followerId);
         validateFollowExists(currentMember, follower);

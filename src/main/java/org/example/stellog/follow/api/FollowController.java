@@ -22,7 +22,7 @@ public class FollowController {
             summary = "팔로우 등록",
             description = "팔로우를 등록합니다. 이미 팔로우 중인 경우 예외가 발생합니다."
     )
-    @PostMapping("{followId}")
+    @PostMapping("/{followId}")
     public RspTemplate<Void> saveFollow(@AuthenticatedEmail String email, @PathVariable("followId") Long memberId) {
         followService.saveFollow(email, memberId);
         return new RspTemplate<>(HttpStatus.CREATED,
@@ -56,12 +56,12 @@ public class FollowController {
             description = "팔로워의 상세정보를 조회합니다."
     )
     @GetMapping("/detail/{followerId}")
-    public RspTemplate<MemberInfoDto> getFollowers(@AuthenticatedEmail String email,
-                                                   @PathVariable Long followerId) {
+    public RspTemplate<MemberInfoDto> getFollowerDetail(@AuthenticatedEmail String email,
+                                                        @PathVariable Long followerId) {
         return new RspTemplate<>(
                 HttpStatus.OK,
                 "팔로워 목록이 성공적으로 조회되었습니다.",
-                followService.getFollowers(email, followerId)
+                followService.getFollowerDetail(email, followerId)
         );
     }
 
