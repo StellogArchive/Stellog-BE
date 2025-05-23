@@ -1,14 +1,17 @@
 package org.example.stellog.member.api;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.example.stellog.global.annotation.AuthenticatedEmail;
 import org.example.stellog.global.gcs.GCSService;
 import org.example.stellog.global.template.RspTemplate;
-import org.example.stellog.member.api.dto.request.MemberUpdateRequestDto;
-import org.example.stellog.member.api.dto.response.MemberInfoDto;
-import org.example.stellog.member.api.dto.response.MemberListInfoDto;
+import org.example.stellog.member.api.dto.request.MemberUpdateReqDto;
+import org.example.stellog.member.api.dto.response.MemberInfoResDto;
+import org.example.stellog.member.api.dto.response.MemberListResDto;
 import org.example.stellog.member.application.MemberService;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -29,8 +32,8 @@ public class MemberController {
             description = "회원 닉네임을 수정합니다"
     )
     @PutMapping("/nickname")
-    public RspTemplate<String> updateMemberNickName(@AuthenticatedEmail String email, @RequestBody MemberUpdateRequestDto memberUpdateRequestDto) {
-        memberService.updateMemberNickNme(email, memberUpdateRequestDto);
+    public RspTemplate<String> updateMemberNickName(@AuthenticatedEmail String email, @RequestBody MemberUpdateReqDto memberUpdateReqDto) {
+        memberService.updateMemberNickNme(email, memberUpdateReqDto);
         return new RspTemplate<>(
                 HttpStatus.OK,
                 "회원 닉네임이 성공적으로 수정되었습니다."
@@ -57,8 +60,14 @@ public class MemberController {
             summary = "회원 정보 조회",
             description = "회원 정보를 조회합니다."
     )
+    @ApiResponse(
+            content = @Content(
+                    mediaType = "application/json",
+                    schema = @Schema(implementation = MemberInfoResDto.class)
+            )
+    )
     @GetMapping("/info")
-    public RspTemplate<MemberInfoDto> getMember(@AuthenticatedEmail String email) {
+    public RspTemplate<MemberInfoResDto> getMember(@AuthenticatedEmail String email) {
         return new RspTemplate<>(
                 HttpStatus.OK,
                 "회원 정보가 성공적으로 조회되었습니다.",
@@ -71,8 +80,8 @@ public class MemberController {
             description = "회원 목록을 조회합니다. 방 생성 시 참여할 회원을 선택하기 위해 사용됩니다. 이름 중 하나 글자만 입력해도 조회가 됩니다."
     )
     @GetMapping("/list")
-    public RspTemplate<MemberListInfoDto> getMemberList(@AuthenticatedEmail String email,
-                                                        @RequestParam("name") String name) {
+    public RspTemplate<MemberListResDto> getMemberList(@AuthenticatedEmail String email,
+                                                       @RequestParam("name") String name) {
         return new RspTemplate<>(
                 HttpStatus.OK,
                 "회원 목록이 성공적으로 조회되었습니다.",

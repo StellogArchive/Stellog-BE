@@ -2,9 +2,9 @@ package org.example.stellog.member.application;
 
 import lombok.RequiredArgsConstructor;
 import org.example.stellog.global.util.MemberRoomService;
-import org.example.stellog.member.api.dto.request.MemberUpdateRequestDto;
-import org.example.stellog.member.api.dto.response.MemberInfoDto;
-import org.example.stellog.member.api.dto.response.MemberListInfoDto;
+import org.example.stellog.member.api.dto.request.MemberUpdateReqDto;
+import org.example.stellog.member.api.dto.response.MemberInfoResDto;
+import org.example.stellog.member.api.dto.response.MemberListResDto;
 import org.example.stellog.member.domain.Member;
 import org.example.stellog.member.domain.repository.MemberRepository;
 import org.springframework.stereotype.Service;
@@ -20,9 +20,9 @@ public class MemberService {
     private final MemberRoomService memberRoomService;
 
     @Transactional
-    public void updateMemberNickNme(String email, MemberUpdateRequestDto memberUpdateRequestDto) {
+    public void updateMemberNickNme(String email, MemberUpdateReqDto memberUpdateReqDto) {
         Member member = memberRoomService.findMemberByEmail(email);
-        member.updateNickName(memberUpdateRequestDto.nickName());
+        member.updateNickName(memberUpdateReqDto.nickName());
     }
 
     @Transactional
@@ -31,9 +31,9 @@ public class MemberService {
         member.updateProfileImgUrl(profileImgUrl);
     }
 
-    public MemberInfoDto getMember(String email) {
+    public MemberInfoResDto getMember(String email) {
         Member member = memberRoomService.findMemberByEmail(email);
-        return new MemberInfoDto(member.getId(),
+        return new MemberInfoResDto(member.getId(),
                 member.getName(),
                 member.getNickName(),
                 member.getEmail(),
@@ -41,13 +41,13 @@ public class MemberService {
         );
     }
 
-    public MemberListInfoDto getMemberList(String email, String name) {
+    public MemberListResDto getMemberList(String email, String name) {
         Member currentMember = memberRoomService.findMemberByEmail(email);
         List<Member> members = memberRepository.findByNameContaining(name);
 
-        List<MemberInfoDto> memberList = members.stream()
+        List<MemberInfoResDto> memberList = members.stream()
                 .filter(m -> !m.getId().equals(currentMember.getId()))
-                .map(m -> new MemberInfoDto(
+                .map(m -> new MemberInfoResDto(
                         m.getId(),
                         m.getName(),
                         m.getNickName(),
@@ -55,6 +55,6 @@ public class MemberService {
                         m.getProfileImgUrl()))
                 .toList();
 
-        return new MemberListInfoDto(memberList);
+        return new MemberListResDto(memberList);
     }
 }

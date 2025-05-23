@@ -1,6 +1,6 @@
 package org.example.stellog.member.api.dto.request;
 
-public record MemberUpdateRequestDto(
+public record MemberUpdateReqDto(
         String nickName
 ) {
 }

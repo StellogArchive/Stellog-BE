@@ -3,7 +3,7 @@ package org.example.stellog.review.api.dto.response;
 import lombok.Builder;
 
 @Builder
-public record ReviewResponseDto(
+public record ReviewInfoResDto(
         Long reviewId,
         Long starbucksId,
         String title,

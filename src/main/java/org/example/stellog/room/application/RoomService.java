@@ -6,11 +6,10 @@ import org.example.stellog.member.domain.Member;
 import org.example.stellog.member.domain.repository.MemberRepository;
 import org.example.stellog.member.exception.MemberNotFoundException;
 import org.example.stellog.review.domain.repository.ReviewRepository;
-import org.example.stellog.room.api.dto.request.RoomRequestDto;
-import org.example.stellog.room.api.dto.response.MemberInfoDto;
-import org.example.stellog.room.api.dto.response.RoomDetailResponseDto;
-import org.example.stellog.room.api.dto.response.RoomListResponseDto;
-import org.example.stellog.room.api.dto.response.RoomResponseDto;
+import org.example.stellog.room.api.dto.request.RoomReqDto;
+import org.example.stellog.room.api.dto.response.RoomDetailResDto;
+import org.example.stellog.room.api.dto.response.RoomListResDto;
+import org.example.stellog.room.api.dto.response.RoomResDto;
 import org.example.stellog.room.domain.Room;
 import org.example.stellog.room.domain.RoomMember;
 import org.example.stellog.room.domain.repository.RoomMemberRepository;
@@ -35,17 +34,17 @@ public class RoomService {
     private final ReviewRepository reviewRepository;
 
     @Transactional
-    public void createRoom(String email, RoomRequestDto roomRequestDto) {
+    public void createRoom(String email, RoomReqDto roomReqDto) {
         Member currentMember = memberRoomService.findMemberByEmail(email);
-        List<Member> selectedMembers = memberRepository.findAllById(roomRequestDto.memberIdList());
+        List<Member> selectedMembers = memberRepository.findAllById(roomReqDto.memberIdList());
 
         if (!selectedMembers.contains(currentMember)) {
             selectedMembers.add(currentMember);
         }
 
         Room room = Room.builder()
-                .name(roomRequestDto.name())
-                .isPublic(roomRequestDto.isPublic())
+                .name(roomReqDto.name())
+                .isPublic(roomReqDto.isPublic())
                 .build();
         roomRepository.save(room);
 
@@ -60,17 +59,17 @@ public class RoomService {
         }
     }
 
-    public RoomListResponseDto getAllRoomByEmail(String email) {
+    public RoomListResDto getAllRoomByEmail(String email) {
         Member currentMember = memberRoomService.findMemberByEmail(email);
         List<RoomMember> roomMembers = roomMemberRepository.findByMember(currentMember);
 
-        List<RoomResponseDto> rooms = roomMembers.stream()
+        List<RoomResDto> rooms = roomMembers.stream()
                 .map(RoomMember::getRoom)
                 .map(room -> {
                     int memberCount = roomMemberRepository.countByRoom(room);
                     long visitedStarbucksCount = reviewRepository.countDistinctStarbucksByRoomId(room.getId());
 
-                    return new RoomResponseDto(
+                    return new RoomResDto(
                             room.getId(),
                             room.getName(),
                             memberCount,
@@ -79,34 +78,33 @@ public class RoomService {
                 })
                 .toList();
 
-        return new RoomListResponseDto(rooms);
+        return new RoomListResDto(rooms);
     }
-
-
-    public RoomDetailResponseDto getRoomDetails(String email, Long roomId) {
+    
+    public RoomDetailResDto getRoomDetails(String email, Long roomId) {
         Member currentMember = memberRoomService.findMemberByEmail(email);
         Room room = memberRoomService.findRoomById(roomId);
         List<RoomMember> roomMembers = findRoomMemberByRoom(room);
 
         memberRoomService.validateMemberInRoom(currentMember, room);
 
-        List<MemberInfoDto> memberDtos = roomMembers.stream()
+        List<RoomDetailResDto.MemberInfoDto> memberDtos = roomMembers.stream()
                 .map(RoomMember::getMember)
-                .map(MemberInfoDto::from)
+                .map(member -> new RoomDetailResDto.MemberInfoDto(member.getId(), member.getName()))
                 .toList();
 
-        return new RoomDetailResponseDto(room.getId(), room.getName(), memberDtos);
+        return new RoomDetailResDto(room.getId(), room.getName(), memberDtos);
     }
 
     @Transactional
-    public void updateRoom(String email, Long roomId, RoomRequestDto roomRequestDto) {
+    public void updateRoom(String email, Long roomId, RoomReqDto roomReqDto) {
         Member currentMember = memberRoomService.findMemberByEmail(email);
         Room room = memberRoomService.findRoomById(roomId);
 
         checkRoomOwner(currentMember, room);
 
-        room.updateRoom(roomRequestDto.name(), roomRequestDto.isPublic());
-        updateRoomMembers(room, roomRequestDto.memberIdList(), currentMember);
+        room.updateRoom(roomReqDto.name(), roomReqDto.isPublic());
+        updateRoomMembers(room, roomReqDto.memberIdList(), currentMember);
     }
 
     @Transactional

@@ -3,9 +3,9 @@ package org.example.stellog.review.application;
 import lombok.RequiredArgsConstructor;
 import org.example.stellog.global.util.MemberRoomService;
 import org.example.stellog.member.domain.Member;
-import org.example.stellog.review.api.dto.request.ReviewRequestDto;
-import org.example.stellog.review.api.dto.response.ReviewListResponseDto;
-import org.example.stellog.review.api.dto.response.ReviewResponseDto;
+import org.example.stellog.review.api.dto.request.ReviewReqDto;
+import org.example.stellog.review.api.dto.response.ReviewInfoResDto;
+import org.example.stellog.review.api.dto.response.ReviewListResDto;
 import org.example.stellog.review.domain.Review;
 import org.example.stellog.review.domain.ReviewLike;
 import org.example.stellog.review.domain.ReviewMember;
@@ -42,15 +42,15 @@ public class ReviewService {
     private final ReviewLikeRepository reviewLikeRepository;
 
     @Transactional
-    public void createReview(String email, Long roomId, ReviewRequestDto reviewRequestDto) {
+    public void createReview(String email, Long roomId, ReviewReqDto reviewReqDto) {
         Member currentMember = memberRoomService.findMemberByEmail(email);
         Room room = memberRoomService.findRoomById(roomId);
         memberRoomService.validateMemberInRoom(currentMember, room);
-        Starbucks starbucks = findStarbucksById(reviewRequestDto.starbucksId());
+        Starbucks starbucks = findStarbucksById(reviewReqDto.starbucksId());
 
         Review review = Review.builder()
-                .title(reviewRequestDto.title())
-                .content(reviewRequestDto.content())
+                .title(reviewReqDto.title())
+                .content(reviewReqDto.content())
                 .room(room)
                 .build();
         reviewRepository.save(review);
@@ -68,7 +68,7 @@ public class ReviewService {
         starbucksReviewRepository.save(starbucksReview);
     }
 
-    public ReviewListResponseDto getAllReviewsByStarbucksId(String email, Long starbucksId) {
+    public ReviewListResDto getAllReviewsByStarbucksId(String email, Long starbucksId) {
         Member currentMember = memberRoomService.findMemberByEmail(email);
         Starbucks starbucks = findStarbucksById(starbucksId);
 
@@ -83,7 +83,7 @@ public class ReviewService {
     }
 
 
-    public ReviewListResponseDto getAllReviewsByRoomId(String email, Long roomId) {
+    public ReviewListResDto getAllReviewsByRoomId(String email, Long roomId) {
         Member currentMember = memberRoomService.findMemberByEmail(email);
         Room room = memberRoomService.findRoomById(roomId);
         memberRoomService.validateMemberInRoom(currentMember, room);
@@ -95,7 +95,7 @@ public class ReviewService {
         return getReviewListResponseDto(currentMember, starbucksReviews, reviews, reviewToMemberMap);
     }
 
-    public ReviewListResponseDto getReviewsByRoomIdAndStarbucksId(String email, Long roomId, Long starbucksId) {
+    public ReviewListResDto getReviewsByRoomIdAndStarbucksId(String email, Long roomId, Long starbucksId) {
         Member currentMember = memberRoomService.findMemberByEmail(email);
         Room room = memberRoomService.findRoomById(roomId);
         memberRoomService.validateMemberInRoom(currentMember, room);
@@ -111,13 +111,13 @@ public class ReviewService {
         return getReviewListResponseDto(currentMember, starbucksReviews, reviews, reviewToMemberMap);
     }
 
-    public ReviewResponseDto getReviewById(String email, Long reviewId) {
+    public ReviewInfoResDto getReviewById(String email, Long reviewId) {
         Member currentMember = memberRoomService.findMemberByEmail(email);
         Review review = findReviewById(reviewId);
         ReviewMember reviewMember = findReviewMemberByReview(review);
         StarbucksReview starbucksReview = findStarbucksReviewByReview(review);
 
-        return ReviewResponseDto.builder()
+        return ReviewInfoResDto.builder()
                 .reviewId(review.getId())
                 .starbucksId(starbucksReview.getStarbucks().getId())
                 .title(review.getTitle())
@@ -129,14 +129,14 @@ public class ReviewService {
     }
 
     @Transactional
-    public void updateReview(String email, Long reviewId, ReviewRequestDto reviewRequestDto) {
+    public void updateReview(String email, Long reviewId, ReviewReqDto reviewReqDto) {
         Member currentMember = memberRoomService.findMemberByEmail(email);
         Review review = findReviewById(reviewId);
         ReviewMember reviewMember = findReviewMemberByReview(review);
 
         validateAuthorOfReview(currentMember, reviewMember);
 
-        review.updateReview(reviewRequestDto.title(), reviewRequestDto.content());
+        review.updateReview(reviewReqDto.title(), reviewReqDto.content());
     }
 
     @Transactional
@@ -242,12 +242,12 @@ public class ReviewService {
                 .collect(Collectors.toMap(rm -> rm.getReview().getId(), rm -> rm));
     }
 
-    private ReviewListResponseDto getReviewListResponseDto(Member currentMember, List<StarbucksReview> starbucksReviews, List<Review> reviews, Map<Long, ReviewMember> reviewToMemberMap) {
+    private ReviewListResDto getReviewListResponseDto(Member currentMember, List<StarbucksReview> starbucksReviews, List<Review> reviews, Map<Long, ReviewMember> reviewToMemberMap) {
         Map<Long, StarbucksReview> reviewToStarbucksReviewMap = createReviewToStarbucksReviewMap(starbucksReviews);
         Map<Long, Integer> likeCounts = countLikesByReviewIn(reviews);
         Set<Long> likedReviewIds = getLikedReviewsByMember(currentMember, reviews);
 
-        List<ReviewResponseDto> reviewResponseDtos = getReviewResponseDtoList(
+        List<ReviewInfoResDto> reviewInfoResDtos = getReviewResponseDtoList(
                 reviews,
                 reviewToMemberMap,
                 reviewToStarbucksReviewMap,
@@ -255,14 +255,14 @@ public class ReviewService {
                 likeCounts
         );
 
-        return new ReviewListResponseDto(reviewResponseDtos);
+        return new ReviewListResDto(reviewInfoResDtos);
     }
 
-    private List<ReviewResponseDto> getReviewResponseDtoList(List<Review> reviews,
-                                                             Map<Long, ReviewMember> reviewToMemberMap,
-                                                             Map<Long, StarbucksReview> reviewToStarbucksReviewMap,
-                                                             Set<Long> likedReviewIds,
-                                                             Map<Long, Integer> likeCounts) {
+    private List<ReviewInfoResDto> getReviewResponseDtoList(List<Review> reviews,
+                                                            Map<Long, ReviewMember> reviewToMemberMap,
+                                                            Map<Long, StarbucksReview> reviewToStarbucksReviewMap,
+                                                            Set<Long> likedReviewIds,
+                                                            Map<Long, Integer> likeCounts) {
         return reviews.stream()
                 .map(review -> {
                     Long reviewId = review.getId();
@@ -277,7 +277,7 @@ public class ReviewService {
                         throw new ReviewNotFoundException("리뷰에 연결된 스타벅스를 찾을 수 없습니다. reviewId: " + reviewId);
                     }
 
-                    return ReviewResponseDto.builder()
+                    return ReviewInfoResDto.builder()
                             .reviewId(reviewId)
                             .starbucksId(starbucksReview.getStarbucks().getId())
                             .title(review.getTitle())

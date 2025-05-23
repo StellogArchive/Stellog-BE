@@ -1,13 +1,16 @@
 package org.example.stellog.room.api;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.example.stellog.global.annotation.AuthenticatedEmail;
 import org.example.stellog.global.template.RspTemplate;
-import org.example.stellog.room.api.dto.request.RoomRequestDto;
-import org.example.stellog.room.api.dto.response.RoomDetailResponseDto;
-import org.example.stellog.room.api.dto.response.RoomListResponseDto;
+import org.example.stellog.room.api.dto.request.RoomReqDto;
+import org.example.stellog.room.api.dto.response.RoomDetailResDto;
+import org.example.stellog.room.api.dto.response.RoomListResDto;
 import org.example.stellog.room.application.RoomService;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -24,8 +27,8 @@ public class RoomController {
             description = "공개 범위를 설정하여 방을 개설합니다."
     )
     @PostMapping
-    public RspTemplate<Void> createRoom(@AuthenticatedEmail String email, @RequestBody RoomRequestDto roomRequestDto) {
-        roomService.createRoom(email, roomRequestDto);
+    public RspTemplate<Void> createRoom(@AuthenticatedEmail String email, @RequestBody RoomReqDto roomReqDto) {
+        roomService.createRoom(email, roomReqDto);
         return new RspTemplate<>(
                 HttpStatus.CREATED,
                 "방이 성공적으로 생성되었습니다.");
@@ -36,7 +39,7 @@ public class RoomController {
             description = "현재 로그인 한 사용자의 모든 방 목록을 조회합니다."
     )
     @GetMapping
-    public RspTemplate<RoomListResponseDto> getAllRoomByEmail(@AuthenticatedEmail String email) {
+    public RspTemplate<RoomListResDto> getAllRoomByEmail(@AuthenticatedEmail String email) {
         return new RspTemplate<>(
                 HttpStatus.OK,
                 "로그인 한 사용자가 생성한 방 목록을 성공적으로 조회하였습니다.",
@@ -47,8 +50,14 @@ public class RoomController {
             summary = "방 상세 정보 조회",
             description = "사용자의 방 상세 정보를 조회 합니다."
     )
+    @ApiResponse(
+            content = @Content(
+                    mediaType = "application/json",
+                    schema = @Schema(implementation = RoomDetailResDto.class)
+            )
+    )
     @GetMapping("/detail/{roomId}")
-    public RspTemplate<RoomDetailResponseDto> getRoomDetails(@AuthenticatedEmail String email, @PathVariable Long roomId) {
+    public RspTemplate<RoomDetailResDto> getRoomDetails(@AuthenticatedEmail String email, @PathVariable Long roomId) {
         return new RspTemplate<>(
                 HttpStatus.OK,
                 "로그인 한 사용자의 방 상세 정보를 성공적으로 조회하였습니다.",
@@ -60,8 +69,8 @@ public class RoomController {
             description = "방을 수정합니다."
     )
     @PutMapping("/{roomId}")
-    public RspTemplate<Void> updateRoom(@AuthenticatedEmail String email, @PathVariable Long roomId, @RequestBody RoomRequestDto roomRequestDto) {
-        roomService.updateRoom(email, roomId, roomRequestDto);
+    public RspTemplate<Void> updateRoom(@AuthenticatedEmail String email, @PathVariable Long roomId, @RequestBody RoomReqDto roomReqDto) {
+        roomService.updateRoom(email, roomId, roomReqDto);
         return new RspTemplate<>(
                 HttpStatus.OK,
                 "방을 성공적으로 수정하였습니다.");

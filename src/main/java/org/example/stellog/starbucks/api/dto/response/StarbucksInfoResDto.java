@@ -1,6 +1,6 @@
 package org.example.stellog.starbucks.api.dto.response;
 
-public record StarbucksInfoResponseDto(
+public record StarbucksInfoResDto(
         Long id,
         String starbucksName,
         double latitude,

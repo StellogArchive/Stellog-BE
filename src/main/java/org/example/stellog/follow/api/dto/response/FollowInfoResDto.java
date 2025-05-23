@@ -1,6 +1,6 @@
 package org.example.stellog.follow.api.dto.response;
 
-public record FollowResponseDto(
+public record FollowInfoResDto(
         String name,
         String nickName
 ) {

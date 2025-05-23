@@ -1,15 +1,15 @@
 package org.example.stellog.follow.application;
 
 import lombok.RequiredArgsConstructor;
-import org.example.stellog.follow.api.dto.response.FollowListResponseDto;
-import org.example.stellog.follow.api.dto.response.FollowResponseDto;
+import org.example.stellog.follow.api.dto.response.FollowInfoResDto;
+import org.example.stellog.follow.api.dto.response.FollowListResDto;
 import org.example.stellog.follow.domain.Follow;
 import org.example.stellog.follow.domain.repository.FollowRepository;
 import org.example.stellog.follow.exception.AlreadyFollowingException;
 import org.example.stellog.follow.exception.NotFollowingException;
 import org.example.stellog.follow.exception.SelfFollowNotAllowedException;
 import org.example.stellog.global.util.MemberRoomService;
-import org.example.stellog.member.api.dto.response.MemberInfoDto;
+import org.example.stellog.member.api.dto.response.MemberInfoResDto;
 import org.example.stellog.member.domain.Member;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -38,36 +38,36 @@ public class FollowService {
         followRepository.save(follow);
     }
 
-    public FollowListResponseDto getFollows(String email) {
+    public FollowListResDto getFollows(String email) {
         Member currentMember = memberRoomService.findMemberByEmail(email);
 
-        List<FollowResponseDto> followDtoList = followRepository.findAllByFollower(currentMember)
+        List<FollowInfoResDto> followDtoList = followRepository.findAllByFollower(currentMember)
                 .stream()
                 .map(Follow::getFollowing)
-                .map(member -> new FollowResponseDto(member.getName(), member.getNickName()))
+                .map(member -> new FollowInfoResDto(member.getName(), member.getNickName()))
                 .toList();
 
-        return new FollowListResponseDto(followDtoList);
+        return new FollowListResDto(followDtoList);
     }
 
-    public FollowListResponseDto getFollowings(String email) {
+    public FollowListResDto getFollowings(String email) {
         Member currentMember = memberRoomService.findMemberByEmail(email);
 
-        List<FollowResponseDto> followingDtoList = followRepository.findAllByFollowing(currentMember)
+        List<FollowInfoResDto> followingDtoList = followRepository.findAllByFollowing(currentMember)
                 .stream()
                 .map(Follow::getFollower)
-                .map(member -> new FollowResponseDto(member.getName(), member.getNickName()))
+                .map(member -> new FollowInfoResDto(member.getName(), member.getNickName()))
                 .toList();
 
-        return new FollowListResponseDto(followingDtoList);
+        return new FollowListResDto(followingDtoList);
     }
 
-    public MemberInfoDto getFollowerDetail(String email, Long followerId) {
+    public MemberInfoResDto getFollowerDetail(String email, Long followerId) {
         Member currentMember = memberRoomService.findMemberByEmail(email);
         Member follower = memberRoomService.findMemberById(followerId);
         validateFollowExists(currentMember, follower);
 
-        return new MemberInfoDto(
+        return new MemberInfoResDto(
                 follower.getId(),
                 follower.getName(),
                 follower.getNickName(),
