@@ -21,5 +21,10 @@ public class GoogleUserInfo implements OAuthUserInfo {
     public String getProvider() {
         return "google";
     }
+
+    @Override
+    public String getPicture() {
+        return attributes.picture();
+    }
 }
 

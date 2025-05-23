@@ -7,6 +7,8 @@ public interface OAuthUserInfo {
 
     String getProvider();
 
+    String getPicture();
+
     class OAuthUserInfoFactory {
         public static OAuthUserInfo getUserInfo(String provider, UserInfo attributes) {
             return switch (provider) {

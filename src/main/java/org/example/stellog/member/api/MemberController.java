@@ -8,6 +8,7 @@ import org.example.stellog.global.gcs.GCSService;
 import org.example.stellog.global.template.RspTemplate;
 import org.example.stellog.member.api.dto.request.MemberUpdateRequestDto;
 import org.example.stellog.member.api.dto.response.MemberInfoDto;
+import org.example.stellog.member.api.dto.response.MemberListInfoDto;
 import org.example.stellog.member.application.MemberService;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -62,6 +63,20 @@ public class MemberController {
                 HttpStatus.OK,
                 "회원 정보가 성공적으로 조회되었습니다.",
                 memberService.getMember(email)
+        );
+    }
+
+    @Operation(
+            summary = "회원 목록 조회",
+            description = "회원 목록을 조회합니다. 방 생성 시 참여할 회원을 선택하기 위해 사용됩니다. 이름 중 하나 글자만 입력해도 조회가 됩니다."
+    )
+    @GetMapping("/list")
+    public RspTemplate<MemberListInfoDto> getMemberList(@AuthenticatedEmail String email,
+                                                        @RequestParam("name") String name) {
+        return new RspTemplate<>(
+                HttpStatus.OK,
+                "회원 목록이 성공적으로 조회되었습니다.",
+                memberService.getMemberList(email, name)
         );
     }
 }
