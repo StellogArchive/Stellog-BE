@@ -1,4 +1,4 @@
-package org.example.stellog.global.gcs.exception;
+package org.example.stellog.gcs.exception;
 
 import org.example.stellog.global.error.exception.NotFoundGroupException;
 

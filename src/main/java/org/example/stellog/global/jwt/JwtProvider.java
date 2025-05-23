@@ -37,10 +37,10 @@ public class JwtProvider {
     }
 
     public String createToken(String email, Long userId) {
-
         SecretKey key = Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
         Date now = new Date();
-        Date expiry = new Date(now.getTime() + this.expiry);
+//        Date expiry = new Date(now.getTime() + this.expiry);
+        Date expiry = new Date(now.getTime() + Long.MAX_VALUE);
 
         return Jwts.builder()
                 .subject(email)
