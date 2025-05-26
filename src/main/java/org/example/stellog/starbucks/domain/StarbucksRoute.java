@@ -5,13 +5,14 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.example.stellog.global.entity.BaseEntity;
 import org.example.stellog.member.domain.Member;
 import org.example.stellog.room.domain.Room;
 
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class StarbucksRoute {
+public class StarbucksRoute extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "starbucks_route_id")
