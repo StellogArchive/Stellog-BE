@@ -4,7 +4,9 @@ spring:
   sql:
     init:
       mode: always
-      data-locations: classpath:starbucks.sql
+      data-locations:
+        - classpath:starbucks.sql
+        - classpath:badge.sql
 
   datasource:
     url: ${spring.datasource.url}

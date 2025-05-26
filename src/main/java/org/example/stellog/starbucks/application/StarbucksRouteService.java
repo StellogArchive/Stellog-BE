@@ -26,6 +26,7 @@ import java.util.stream.Collectors;
 @Slf4j
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class StarbucksRouteService {
     private final MemberRoomService memberRoomService;
     private final StarbucksRepository starbucksRepository;

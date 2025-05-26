@@ -51,7 +51,7 @@ public class MemberController implements MemberControllerDocs {
         );
     }
 
-    @GetMapping("/list")
+    @GetMapping()
     public RspTemplate<MemberListResDto> getMemberList(@AuthenticatedEmail String email,
                                                        @RequestParam("name") String name) {
         return new RspTemplate<>(
