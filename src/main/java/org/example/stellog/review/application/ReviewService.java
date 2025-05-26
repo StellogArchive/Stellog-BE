@@ -25,6 +25,7 @@ import org.example.stellog.starbucks.exception.StarbucksNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -52,6 +53,7 @@ public class ReviewService {
                 .title(reviewReqDto.title())
                 .content(reviewReqDto.content())
                 .room(room)
+                .mainImgUrl(reviewReqDto.mainImgUrl())
                 .build();
         reviewRepository.save(review);
 
@@ -125,6 +127,8 @@ public class ReviewService {
                 .title(review.getTitle())
                 .content(review.getContent())
                 .author(reviewMember.getMember().getName())
+                .mainImgUrl(review.getMainImgUrl())
+                .date(review.getCreatedAt().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")))
                 .isAuthor(isAuthor)
                 .isLike(existsLikeByMemberAndReview(currentMember, review))
                 .likeCount(countLikesByReview(review))
@@ -290,6 +294,8 @@ public class ReviewService {
                             .title(review.getTitle())
                             .content(review.getContent())
                             .author(reviewMember.getMember().getName())
+                            .date(review.getCreatedAt().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")))
+                            .mainImgUrl(review.getMainImgUrl())
                             .isAuthor(isAuthor)
                             .isLike(likedReviewIds.contains(reviewId))
                             .likeCount(likeCounts.getOrDefault(reviewId, 0))

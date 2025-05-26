@@ -9,8 +9,9 @@ public record ReviewInfoResDto(
         String title,
         String content,
         String author,
+        String mainImgUrl,
+        String date, // createAt
         boolean isAuthor,
-//        String date // createAt
         boolean isLike,
         int likeCount
 ) {

@@ -21,14 +21,17 @@ public class Review extends BaseEntity {
 
     private String content;
 
+    private String mainImgUrl;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "room_id")
     private Room room;
 
     @Builder
-    private Review(String title, String content, Room room) {
+    private Review(String title, String content, String mainImgUrl, Room room) {
         this.title = title;
         this.content = content;
+        this.mainImgUrl = mainImgUrl;
         this.room = room;
     }
 
