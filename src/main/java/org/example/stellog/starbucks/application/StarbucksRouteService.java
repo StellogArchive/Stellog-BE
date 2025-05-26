@@ -54,6 +54,7 @@ public class StarbucksRouteService {
                 StarbucksRoute.builder()
                         .name(requestDto.name())
                         .room(room)
+                        .member(member)
                         .build()
         );
 
@@ -83,22 +84,24 @@ public class StarbucksRouteService {
         List<StarbucksRouteResDto> routeResponses = new ArrayList<>();
         for (StarbucksRoute route : routes) {
             List<StarbucksRouteItem> items = starbucksRouteItemRepository.findByStarbucksRouteOrderBySequenceOrder(route);
+            boolean isOwner = route.getMember().getEmail().equals(email);
             List<StarbucksInfoResDto> starbucksDtos = convertToDtos(items);
-            routeResponses.add(new StarbucksRouteResDto(route.getName(), starbucksDtos));
+            routeResponses.add(new StarbucksRouteResDto(route.getName(), isOwner, starbucksDtos));
         }
 
         return new StarbucksRouteListResDto(routeResponses);
     }
 
-    public StarbucksRouteResDto getRouteByRouteId(String email, Long routeId) {
+    public StarbucksRouteResDto getRouteDetail(String email, Long routeId) {
         Member member = memberRoomService.findMemberByEmail(email);
         StarbucksRoute route = findStarbucksRouteById(routeId);
         memberRoomService.validateMemberInRoom(member, route.getRoom());
 
         List<StarbucksRouteItem> items = starbucksRouteItemRepository.findByStarbucksRouteOrderBySequenceOrder(route);
+        boolean isOwner = route.getMember().getEmail().equals(member.getEmail());
         List<StarbucksInfoResDto> starbucksDtos = convertToDtos(items);
 
-        return new StarbucksRouteResDto(route.getName(), starbucksDtos);
+        return new StarbucksRouteResDto(route.getName(), isOwner, starbucksDtos);
     }
 
     @Transactional

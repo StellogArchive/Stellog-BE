@@ -16,7 +16,7 @@ public class FollowController implements FollowControllerDocs {
     private final FollowService followService;
 
     @PostMapping("/{followId}")
-    public RspTemplate<Void> saveFollow(@AuthenticatedEmail String email, @PathVariable("followId") Long memberId) {
+    public RspTemplate<Void> saveFollow(@AuthenticatedEmail String email, @PathVariable(value = "followId") Long memberId) {
         followService.saveFollow(email, memberId);
         return new RspTemplate<>(HttpStatus.CREATED,
                 "팔로우가 성공적으로 등록되었습니다.");
@@ -38,7 +38,7 @@ public class FollowController implements FollowControllerDocs {
 
     @GetMapping("/detail/{followerId}")
     public RspTemplate<MemberInfoResDto> getFollowerDetail(@AuthenticatedEmail String email,
-                                                           @PathVariable Long followerId) {
+                                                           @PathVariable(value = "followerId") Long followerId) {
         return new RspTemplate<>(
                 HttpStatus.OK,
                 "팔로워 목록이 성공적으로 조회되었습니다.",
@@ -48,7 +48,7 @@ public class FollowController implements FollowControllerDocs {
 
     @DeleteMapping("/{followId}")
     public RspTemplate<Void> deleteFollow(@AuthenticatedEmail String email,
-                                          @PathVariable("followId") Long followId) {
+                                          @PathVariable(value = "followId") Long followId) {
         followService.deleteFollow(email, followId);
         return new RspTemplate<>(HttpStatus.OK,
                 "팔로우가 성공적으로 삭제되었습니다.");

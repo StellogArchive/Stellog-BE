@@ -17,7 +17,7 @@ public interface FollowControllerDocs {
             summary = "팔로우 등록",
             description = "팔로우를 등록합니다. 이미 팔로우 중인 경우 예외가 발생합니다."
     )
-    RspTemplate<Void> saveFollow(@AuthenticatedEmail String email, @PathVariable("followId") Long memberId);
+    RspTemplate<Void> saveFollow(@AuthenticatedEmail String email, @PathVariable Long memberId);
 
     @Operation(
             summary = "팔로우 목록 조회",
@@ -61,5 +61,5 @@ public interface FollowControllerDocs {
             description = "팔로우를 취소합니다."
     )
     RspTemplate<Void> deleteFollow(@AuthenticatedEmail String email,
-                                   @PathVariable("followId") Long followId);
+                                   @PathVariable Long followId);
 }

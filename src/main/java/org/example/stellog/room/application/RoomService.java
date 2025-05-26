@@ -80,20 +80,21 @@ public class RoomService {
 
         return new RoomListResDto(rooms);
     }
-    
-    public RoomDetailResDto getRoomDetails(String email, Long roomId) {
+
+    public RoomDetailResDto getRoomDetail(String email, Long roomId) {
         Member currentMember = memberRoomService.findMemberByEmail(email);
         Room room = memberRoomService.findRoomById(roomId);
         List<RoomMember> roomMembers = findRoomMemberByRoom(room);
 
         memberRoomService.validateMemberInRoom(currentMember, room);
-
+        boolean isOwner = roomMembers.stream()
+                .anyMatch(rm -> rm.getMember().getId().equals(currentMember.getId()) && rm.isOwner());
         List<RoomDetailResDto.MemberInfoDto> memberDtos = roomMembers.stream()
                 .map(RoomMember::getMember)
                 .map(member -> new RoomDetailResDto.MemberInfoDto(member.getId(), member.getName()))
                 .toList();
 
-        return new RoomDetailResDto(room.getId(), room.getName(), memberDtos);
+        return new RoomDetailResDto(room.getId(), room.getName(), isOwner, memberDtos);
     }
 
     @Transactional

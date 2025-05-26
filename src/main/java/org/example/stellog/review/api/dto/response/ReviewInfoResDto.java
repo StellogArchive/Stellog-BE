@@ -4,11 +4,12 @@ import lombok.Builder;
 
 @Builder
 public record ReviewInfoResDto(
-        Long reviewId,
+        Long id,
         Long starbucksId,
         String title,
         String content,
         String author,
+        boolean isAuthor,
 //        String date // createAt
         boolean isLike,
         int likeCount

@@ -67,7 +67,7 @@ public interface ReviewControllerDocs {
                     schema = @Schema(implementation = ReviewInfoResDto.class)
             )
     )
-    RspTemplate<ReviewInfoResDto> getReviewById(@AuthenticatedEmail String email, @PathVariable Long reviewId);
+    RspTemplate<ReviewInfoResDto> getReviewDetailById(@AuthenticatedEmail String email, @PathVariable Long reviewId);
 
     @Operation(
             summary = "리뷰 수정",

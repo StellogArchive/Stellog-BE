@@ -43,7 +43,7 @@ public interface RoomControllerDocs {
                     schema = @Schema(implementation = RoomDetailResDto.class)
             )
     )
-    RspTemplate<RoomDetailResDto> getRoomDetails(@AuthenticatedEmail String email, @PathVariable Long roomId);
+    RspTemplate<RoomDetailResDto> getRoomDetail(@AuthenticatedEmail String email, @PathVariable Long roomId);
 
     @Operation(
             summary = "방 수정",

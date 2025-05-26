@@ -111,18 +111,21 @@ public class ReviewService {
         return getReviewListResponseDto(currentMember, starbucksReviews, reviews, reviewToMemberMap);
     }
 
-    public ReviewInfoResDto getReviewById(String email, Long reviewId) {
+    public ReviewInfoResDto getReviewDetailById(String email, Long reviewId) {
         Member currentMember = memberRoomService.findMemberByEmail(email);
         Review review = findReviewById(reviewId);
         ReviewMember reviewMember = findReviewMemberByReview(review);
         StarbucksReview starbucksReview = findStarbucksReviewByReview(review);
 
+        boolean isAuthor = currentMember.getId().equals(reviewMember.getMember().getId());
+
         return ReviewInfoResDto.builder()
-                .reviewId(review.getId())
+                .id(review.getId())
                 .starbucksId(starbucksReview.getStarbucks().getId())
                 .title(review.getTitle())
                 .content(review.getContent())
                 .author(reviewMember.getMember().getName())
+                .isAuthor(isAuthor)
                 .isLike(existsLikeByMemberAndReview(currentMember, review))
                 .likeCount(countLikesByReview(review))
                 .build();
@@ -251,6 +254,7 @@ public class ReviewService {
                 reviews,
                 reviewToMemberMap,
                 reviewToStarbucksReviewMap,
+                currentMember,
                 likedReviewIds,
                 likeCounts
         );
@@ -261,6 +265,7 @@ public class ReviewService {
     private List<ReviewInfoResDto> getReviewResponseDtoList(List<Review> reviews,
                                                             Map<Long, ReviewMember> reviewToMemberMap,
                                                             Map<Long, StarbucksReview> reviewToStarbucksReviewMap,
+                                                            Member currentMember,
                                                             Set<Long> likedReviewIds,
                                                             Map<Long, Integer> likeCounts) {
         return reviews.stream()
@@ -277,12 +282,15 @@ public class ReviewService {
                         throw new ReviewNotFoundException("리뷰에 연결된 스타벅스를 찾을 수 없습니다. reviewId: " + reviewId);
                     }
 
+                    boolean isAuthor = reviewMember.getMember().getId().equals(currentMember.getId());
+
                     return ReviewInfoResDto.builder()
-                            .reviewId(reviewId)
+                            .id(reviewId)
                             .starbucksId(starbucksReview.getStarbucks().getId())
                             .title(review.getTitle())
                             .content(review.getContent())
                             .author(reviewMember.getMember().getName())
+                            .isAuthor(isAuthor)
                             .isLike(likedReviewIds.contains(reviewId))
                             .likeCount(likeCounts.getOrDefault(reviewId, 0))
                             .build();

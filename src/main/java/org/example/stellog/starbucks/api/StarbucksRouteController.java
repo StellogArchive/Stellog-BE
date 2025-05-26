@@ -17,31 +17,31 @@ public class StarbucksRouteController implements StarbucksRouteControllerDocs {
     private final StarbucksRouteService starbucksRouteService;
 
     @PostMapping("/optimize/{roomId}")
-    public RspTemplate<String> createRoute(@AuthenticatedEmail String email, @PathVariable Long roomId, @RequestBody StarbucksRouteReqDto starbucksRouteReqDto) {
+    public RspTemplate<String> createRoute(@AuthenticatedEmail String email, @PathVariable(value = "roomId") Long roomId, @RequestBody StarbucksRouteReqDto starbucksRouteReqDto) {
         Long routeId = starbucksRouteService.createOptimizedRoute(email, roomId, starbucksRouteReqDto);
         return new RspTemplate<>(HttpStatus.CREATED, "최적화 동선이 저장되었습니다.", routeId.toString());
     }
 
     @GetMapping("room/{roomId}")
-    public RspTemplate<StarbucksRouteListResDto> getRouteByRoomId(@AuthenticatedEmail String email, @PathVariable Long roomId) {
+    public RspTemplate<StarbucksRouteListResDto> getRouteByRoomId(@AuthenticatedEmail String email, @PathVariable(value = "roomId") Long roomId) {
         StarbucksRouteListResDto route = starbucksRouteService.getRouteByRoomId(email, roomId);
-        return new RspTemplate<>(HttpStatus.OK, "스타벅스 최적화 동선을 성공적으로 조회하였습니다.", route);
+        return new RspTemplate<>(HttpStatus.OK, "방 별 스타벅스 최적화 동선을 성공적으로 조회하였습니다.", route);
     }
 
     @GetMapping("route/{routeId}")
-    public RspTemplate<StarbucksRouteResDto> getRouteByRouteId(@AuthenticatedEmail String email, @PathVariable Long routeId) {
-        StarbucksRouteResDto route = starbucksRouteService.getRouteByRouteId(email, routeId);
-        return new RspTemplate<>(HttpStatus.OK, "스타벅스 최적화 동선을 성공적으로 조회하였습니다.", route);
+    public RspTemplate<StarbucksRouteResDto> getRouteDetail(@AuthenticatedEmail String email, @PathVariable(value = "routeId") Long routeId) {
+        StarbucksRouteResDto route = starbucksRouteService.getRouteDetail(email, routeId);
+        return new RspTemplate<>(HttpStatus.OK, "스타벅스 최적화 동선 상세 조회를 성공적으로 조회하였습니다.", route);
     }
 
     @PutMapping("{routeId}")
-    public RspTemplate<Void> updateRoute(@AuthenticatedEmail String email, @PathVariable Long routeId, @RequestBody StarbucksRouteReqDto starbucksRouteReqDto) {
+    public RspTemplate<Void> updateRoute(@AuthenticatedEmail String email, @PathVariable(value = "routeId") Long routeId, @RequestBody StarbucksRouteReqDto starbucksRouteReqDto) {
         starbucksRouteService.updateRoute(email, routeId, starbucksRouteReqDto);
         return new RspTemplate<>(HttpStatus.OK, "스타벅스 최적화 동선이 성공적으로 수정되었습니다.");
     }
 
     @DeleteMapping("{routeId}")
-    public RspTemplate<Void> deleteRoute(@AuthenticatedEmail String email, @PathVariable Long routeId) {
+    public RspTemplate<Void> deleteRoute(@AuthenticatedEmail String email, @PathVariable(value = "routeId") Long routeId) {
         starbucksRouteService.deleteRoute(email, routeId);
         return new RspTemplate<>(HttpStatus.NO_CONTENT, "스타벅스 최적화 동선이 성공적으로 삭제되었습니다.");
     }

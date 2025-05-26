@@ -43,7 +43,7 @@ public interface StarbucksRouteControllerDocs {
                     schema = @Schema(implementation = StarbucksRouteResDto.class)
             )
     )
-    RspTemplate<StarbucksRouteResDto> getRouteByRouteId(@AuthenticatedEmail String email, @PathVariable Long routeId);
+    RspTemplate<StarbucksRouteResDto> getRouteDetail(@AuthenticatedEmail String email, @PathVariable Long routeId);
 
     @Operation(
             summary = "스타벅스 최적화 동선 목록 수정",
