@@ -33,15 +33,15 @@ public class RoomController implements RoomControllerDocs {
     }
 
     @GetMapping("/detail/{roomId}")
-    public RspTemplate<RoomDetailResDto> getRoomDetails(@AuthenticatedEmail String email, @PathVariable Long roomId) {
+    public RspTemplate<RoomDetailResDto> getRoomDetail(@AuthenticatedEmail String email, @PathVariable(value = "roomId") Long roomId) {
         return new RspTemplate<>(
                 HttpStatus.OK,
                 "로그인 한 사용자의 방 상세 정보를 성공적으로 조회하였습니다.",
-                roomService.getRoomDetails(email, roomId));
+                roomService.getRoomDetail(email, roomId));
     }
 
     @PutMapping("/{roomId}")
-    public RspTemplate<Void> updateRoom(@AuthenticatedEmail String email, @PathVariable Long roomId, @RequestBody RoomReqDto roomReqDto) {
+    public RspTemplate<Void> updateRoom(@AuthenticatedEmail String email, @PathVariable(value = "roomId") Long roomId, @RequestBody RoomReqDto roomReqDto) {
         roomService.updateRoom(email, roomId, roomReqDto);
         return new RspTemplate<>(
                 HttpStatus.OK,
@@ -49,7 +49,7 @@ public class RoomController implements RoomControllerDocs {
     }
 
     @DeleteMapping("/{roomId}")
-    public RspTemplate<Void> deleteRoom(@AuthenticatedEmail String email, @PathVariable Long roomId) {
+    public RspTemplate<Void> deleteRoom(@AuthenticatedEmail String email, @PathVariable(value = "roomId") Long roomId) {
         roomService.deleteRoom(email, roomId);
         return new RspTemplate<>(
                 HttpStatus.OK,

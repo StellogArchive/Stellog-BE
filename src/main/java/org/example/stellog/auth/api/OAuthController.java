@@ -32,7 +32,7 @@ public class OAuthController implements OAuthControllerDocs {
 
     @GetMapping("/authorization/{provider}")
     public void redirectToAuthorize(
-            @PathVariable String provider,
+            @PathVariable(value = "provider") String provider,
             HttpServletResponse response
     ) throws IOException {
         String redirectUrl = oAuthService.buildAuthUrl(provider);
@@ -41,8 +41,8 @@ public class OAuthController implements OAuthControllerDocs {
 
     @GetMapping("/callback/{provider}")
     public ResponseEntity<TokenDto> handleCallback(
-            @PathVariable String provider,
-            @RequestParam String code
+            @PathVariable(value = "provider") String provider,
+            @RequestParam("code") String code
     ) {
         TokenDto tokenDto = oAuthService.handleOAuthLogin(provider, code);
         return ResponseEntity.ok().body(tokenDto);

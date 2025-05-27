@@ -17,4 +17,6 @@ public interface RoomMemberRepository extends JpaRepository<RoomMember, Long> {
     boolean existsByMemberAndRoomAndIsOwnerTrue(Member member, Room room);
 
     int countByRoom(Room room);
+
+    int countByMember(Member member);
 }

@@ -17,7 +17,7 @@ public class ReviewController implements ReviewControllerDocs {
     private final ReviewService reviewService;
 
     @PostMapping("{roomId}")
-    public RspTemplate<Void> createReview(@AuthenticatedEmail String email, @PathVariable Long roomId, @RequestBody ReviewReqDto reviewReqDto) {
+    public RspTemplate<Void> createReview(@AuthenticatedEmail String email, @PathVariable(value = "roomId") Long roomId, @RequestBody ReviewReqDto reviewReqDto) {
         reviewService.createReview(email, roomId, reviewReqDto);
         System.out.println(reviewReqDto.starbucksId());
         return new RspTemplate<>(
@@ -26,39 +26,39 @@ public class ReviewController implements ReviewControllerDocs {
     }
 
     @GetMapping("/starbucks/{starbucksId}")
-    public RspTemplate<ReviewListResDto> getAllReviewsByStarbucksId(@AuthenticatedEmail String email, @PathVariable Long starbucksId) {
+    public RspTemplate<ReviewListResDto> getAllReviewsByStarbucksId(@AuthenticatedEmail String email, @PathVariable(value = "starbucksId") Long starbucksId) {
         return new RspTemplate<>(
                 HttpStatus.OK,
-                "리뷰 목록을 성공적으로 조회하였습니다.",
+                "스타벅스 별 리뷰 목록을 성공적으로 조회하였습니다.",
                 reviewService.getAllReviewsByStarbucksId(email, starbucksId));
     }
 
     @GetMapping("/room/{roomId}")
-    public RspTemplate<ReviewListResDto> getAllReviewsByRoomId(@AuthenticatedEmail String email, @PathVariable Long roomId) {
+    public RspTemplate<ReviewListResDto> getAllReviewsByRoomId(@AuthenticatedEmail String email, @PathVariable(value = "roomId") Long roomId) {
         return new RspTemplate<>(
                 HttpStatus.OK,
-                "리뷰 목록을 성공적으로 조회하였습니다.",
+                "방 별 리뷰 목록을 성공적으로 조회하였습니다.",
                 reviewService.getAllReviewsByRoomId(email, roomId));
     }
 
     @GetMapping("{roomId}/{starbucksId}")
-    public RspTemplate<ReviewListResDto> getReviewsByRoomIdAndStarbucksId(@AuthenticatedEmail String email, @PathVariable Long roomId, @PathVariable Long starbucksId) {
+    public RspTemplate<ReviewListResDto> getReviewsByRoomIdAndStarbucksId(@AuthenticatedEmail String email, @PathVariable(value = "roomId") Long roomId, @PathVariable(value = "starbucksId") Long starbucksId) {
         return new RspTemplate<>(
                 HttpStatus.OK,
-                "리뷰 목록을 성공적으로 조회하였습니다.",
+                "스타벅스와 방 별 리뷰 목록을 성공적으로 조회하였습니다.",
                 reviewService.getReviewsByRoomIdAndStarbucksId(email, roomId, starbucksId));
     }
 
     @GetMapping("/{reviewId}")
-    public RspTemplate<ReviewInfoResDto> getReviewById(@AuthenticatedEmail String email, @PathVariable Long reviewId) {
+    public RspTemplate<ReviewInfoResDto> getReviewDetailById(@AuthenticatedEmail String email, @PathVariable(value = "reviewId") Long reviewId) {
         return new RspTemplate<>(
                 HttpStatus.OK,
-                "리뷰를 성공적으로 조회하였습니다.",
-                reviewService.getReviewById(email, reviewId));
+                "리뷰 상세 조회를 성공적으로 조회하였습니다.",
+                reviewService.getReviewDetailById(email, reviewId));
     }
 
     @PutMapping({"/{reviewId}"})
-    public RspTemplate<Void> updateReview(@AuthenticatedEmail String email, @PathVariable Long reviewId, @RequestBody ReviewReqDto reviewReqDto) {
+    public RspTemplate<Void> updateReview(@AuthenticatedEmail String email, @PathVariable(value = "reviewId") Long reviewId, @RequestBody ReviewReqDto reviewReqDto) {
         reviewService.updateReview(email, reviewId, reviewReqDto);
         return new RspTemplate<>(
                 HttpStatus.OK,
@@ -66,7 +66,7 @@ public class ReviewController implements ReviewControllerDocs {
     }
 
     @DeleteMapping("/{reviewId}")
-    public RspTemplate<Void> deleteReview(@AuthenticatedEmail String email, @PathVariable Long reviewId) {
+    public RspTemplate<Void> deleteReview(@AuthenticatedEmail String email, @PathVariable(value = "reviewId") Long reviewId) {
         reviewService.deleteReview(email, reviewId);
         return new RspTemplate<>(
                 HttpStatus.OK,
@@ -74,7 +74,7 @@ public class ReviewController implements ReviewControllerDocs {
     }
 
     @PostMapping("/like/{reviewId}")
-    public RspTemplate<Void> likeReview(@AuthenticatedEmail String email, @PathVariable Long reviewId) {
+    public RspTemplate<Void> likeReview(@AuthenticatedEmail String email, @PathVariable(value = "reviewId") Long reviewId) {
         reviewService.likeReview(email, reviewId);
         return new RspTemplate<>(
                 HttpStatus.OK,
@@ -82,7 +82,7 @@ public class ReviewController implements ReviewControllerDocs {
     }
 
     @DeleteMapping("/like/{reviewId}")
-    public RspTemplate<Void> unlikeReview(@AuthenticatedEmail String email, @PathVariable Long reviewId) {
+    public RspTemplate<Void> unlikeReview(@AuthenticatedEmail String email, @PathVariable(value = "reviewId") Long reviewId) {
         reviewService.unlikeReview(email, reviewId);
         return new RspTemplate<>(
                 HttpStatus.OK,
