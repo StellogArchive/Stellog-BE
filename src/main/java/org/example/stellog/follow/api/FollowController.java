@@ -5,7 +5,6 @@ import org.example.stellog.follow.api.dto.response.FollowListResDto;
 import org.example.stellog.follow.application.FollowService;
 import org.example.stellog.global.annotation.AuthenticatedEmail;
 import org.example.stellog.global.template.RspTemplate;
-import org.example.stellog.member.api.dto.response.MemberInfoResDto;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
@@ -34,16 +33,6 @@ public class FollowController implements FollowControllerDocs {
         return new RspTemplate<>(HttpStatus.OK,
                 "팔로잉 목록 조회에 성공했습니다.",
                 followService.getFollowings(email));
-    }
-
-    @GetMapping("/detail/{followerId}")
-    public RspTemplate<MemberInfoResDto> getFollowerDetail(@AuthenticatedEmail String email,
-                                                           @PathVariable(value = "followerId") Long followerId) {
-        return new RspTemplate<>(
-                HttpStatus.OK,
-                "팔로워 목록이 성공적으로 조회되었습니다.",
-                followService.getFollowerDetail(email, followerId)
-        );
     }
 
     @DeleteMapping("/{followId}")

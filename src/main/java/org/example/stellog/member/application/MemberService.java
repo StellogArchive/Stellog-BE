@@ -1,12 +1,15 @@
 package org.example.stellog.member.application;
 
 import lombok.RequiredArgsConstructor;
+import org.example.stellog.follow.domain.repository.FollowRepository;
 import org.example.stellog.global.util.MemberRoomService;
 import org.example.stellog.member.api.dto.request.MemberUpdateReqDto;
 import org.example.stellog.member.api.dto.response.MemberInfoResDto;
 import org.example.stellog.member.api.dto.response.MemberListResDto;
 import org.example.stellog.member.domain.Member;
 import org.example.stellog.member.domain.repository.MemberRepository;
+import org.example.stellog.review.domain.repository.ReviewMemberRepository;
+import org.example.stellog.room.domain.repository.RoomMemberRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -18,6 +21,9 @@ import java.util.List;
 public class MemberService {
     private final MemberRepository memberRepository;
     private final MemberRoomService memberRoomService;
+    private final ReviewMemberRepository reviewMemberRepository;
+    private final FollowRepository followRepository;
+    private final RoomMemberRepository roomMemberRepository;
 
     @Transactional
     public void updateMemberNickNme(String email, MemberUpdateReqDto memberUpdateReqDto) {
@@ -33,28 +39,38 @@ public class MemberService {
 
     public MemberInfoResDto getMember(String email) {
         Member member = memberRoomService.findMemberByEmail(email);
-        return new MemberInfoResDto(member.getId(),
-                member.getName(),
-                member.getNickName(),
-                member.getEmail(),
-                member.getProfileImgUrl()
-        );
+        return createMemberInfoResDto(member);
     }
 
-    public MemberListResDto getMemberList(String email, String name) {
+    public MemberListResDto getAllMembers(String email, String name) {
         Member currentMember = memberRoomService.findMemberByEmail(email);
         List<Member> members = memberRepository.findByNameContaining(name);
 
         List<MemberInfoResDto> memberList = members.stream()
                 .filter(m -> !m.getId().equals(currentMember.getId()))
-                .map(m -> new MemberInfoResDto(
-                        m.getId(),
-                        m.getName(),
-                        m.getNickName(),
-                        m.getEmail(),
-                        m.getProfileImgUrl()))
+                .map(this::createMemberInfoResDto)
                 .toList();
 
         return new MemberListResDto(memberList);
+    }
+
+    private MemberInfoResDto createMemberInfoResDto(Member member) {
+        int roomCount = roomMemberRepository.countByMember(member);
+        int reviewCount = reviewMemberRepository.countByMember(member);
+        int followingCount = followRepository.countByFollower(member);
+        int followerCount = followRepository.countByFollowing(member);
+        // TODO: 배지 리스트 추가
+
+        return new MemberInfoResDto(
+                member.getId(),
+                member.getName(),
+                member.getNickName(),
+                member.getEmail(),
+                member.getProfileImgUrl(),
+                roomCount,
+                reviewCount,
+                followingCount,
+                followerCount
+        );
     }
 }

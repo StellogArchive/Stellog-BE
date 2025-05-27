@@ -5,6 +5,10 @@ public record MemberInfoResDto(
         String name,
         String nickName,
         String email,
-        String imageUrl
+        String profileImgUrl,
+        int roomCount,
+        int reviewCount,
+        int followingCount,
+        int followerCount
 ) {
 }

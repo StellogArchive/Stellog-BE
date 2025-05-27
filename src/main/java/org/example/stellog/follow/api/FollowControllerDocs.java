@@ -8,7 +8,6 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import org.example.stellog.follow.api.dto.response.FollowListResDto;
 import org.example.stellog.global.annotation.AuthenticatedEmail;
 import org.example.stellog.global.template.RspTemplate;
-import org.example.stellog.member.api.dto.response.MemberInfoResDto;
 import org.springframework.web.bind.annotation.PathVariable;
 
 @Tag(name = "Follow", description = "팔로우 관련 API")
@@ -42,19 +41,6 @@ public interface FollowControllerDocs {
             )
     )
     RspTemplate<FollowListResDto> getFollowings(@AuthenticatedEmail String email);
-
-    @Operation(
-            summary = "팔로워 상세정보 조회",
-            description = "팔로워의 상세정보를 조회합니다."
-    )
-    @ApiResponse(
-            content = @Content(
-                    mediaType = "application/json",
-                    schema = @Schema(implementation = MemberInfoResDto.class)
-            )
-    )
-    RspTemplate<MemberInfoResDto> getFollowerDetail(@AuthenticatedEmail String email,
-                                                    @PathVariable Long followerId);
 
     @Operation(
             summary = "팔로우 취소",

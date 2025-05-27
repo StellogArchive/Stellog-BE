@@ -52,12 +52,12 @@ public class MemberController implements MemberControllerDocs {
     }
 
     @GetMapping()
-    public RspTemplate<MemberListResDto> getMemberList(@AuthenticatedEmail String email,
+    public RspTemplate<MemberListResDto> getAllMembers(@AuthenticatedEmail String email,
                                                        @RequestParam("name") String name) {
         return new RspTemplate<>(
                 HttpStatus.OK,
                 "회원 목록이 성공적으로 조회되었습니다.",
-                memberService.getMemberList(email, name)
+                memberService.getAllMembers(email, name)
         );
     }
 }

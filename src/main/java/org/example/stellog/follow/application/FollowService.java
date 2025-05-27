@@ -9,7 +9,6 @@ import org.example.stellog.follow.exception.AlreadyFollowingException;
 import org.example.stellog.follow.exception.NotFollowingException;
 import org.example.stellog.follow.exception.SelfFollowNotAllowedException;
 import org.example.stellog.global.util.MemberRoomService;
-import org.example.stellog.member.api.dto.response.MemberInfoResDto;
 import org.example.stellog.member.domain.Member;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -60,20 +59,6 @@ public class FollowService {
                 .toList();
 
         return new FollowListResDto(followingDtoList);
-    }
-
-    public MemberInfoResDto getFollowerDetail(String email, Long followerId) {
-        Member currentMember = memberRoomService.findMemberByEmail(email);
-        Member follower = memberRoomService.findMemberById(followerId);
-        validateFollowExists(currentMember, follower);
-
-        return new MemberInfoResDto(
-                follower.getId(),
-                follower.getName(),
-                follower.getNickName(),
-                follower.getEmail(),
-                follower.getProfileImgUrl()
-        );
     }
 
     @Transactional

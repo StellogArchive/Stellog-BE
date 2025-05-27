@@ -53,6 +53,6 @@ public interface MemberControllerDocs {
                     schema = @Schema(implementation = MemberListResDto.class)
             )
     )
-    RspTemplate<MemberListResDto> getMemberList(@AuthenticatedEmail String email,
+    RspTemplate<MemberListResDto> getAllMembers(@AuthenticatedEmail String email,
                                                 @RequestParam("name") String name);
 }
