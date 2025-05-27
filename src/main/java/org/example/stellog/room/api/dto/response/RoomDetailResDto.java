@@ -6,7 +6,9 @@ public record RoomDetailResDto(
         Long id,
         String name,
         boolean isOwner,
-        List<MemberInfoDto> roomMembers
+        List<MemberInfoDto> roomMembers,
+        int reviewCount,
+        int starbucksCount
 ) {
     public record MemberInfoDto(
             Long id,

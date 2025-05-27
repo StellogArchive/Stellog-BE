@@ -93,8 +93,10 @@ public class RoomService {
                 .map(RoomMember::getMember)
                 .map(member -> new RoomDetailResDto.MemberInfoDto(member.getId(), member.getName()))
                 .toList();
+        int reviewCount = reviewRepository.countByRoom(room);
+        int starbucksCount = (int) reviewRepository.countDistinctStarbucksByRoomId(room.getId());
 
-        return new RoomDetailResDto(room.getId(), room.getName(), isOwner, memberDtos);
+        return new RoomDetailResDto(room.getId(), room.getName(), isOwner, memberDtos, reviewCount, starbucksCount);
     }
 
     @Transactional
