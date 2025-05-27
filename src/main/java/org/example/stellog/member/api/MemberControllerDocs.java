@@ -33,7 +33,7 @@ public interface MemberControllerDocs {
 
     @Operation(
             summary = "회원 정보 조회",
-            description = "회원 정보를 조회합니다."
+            description = "마이페이지에서 회원 정보를 조회합니다."
     )
     @ApiResponse(
             content = @Content(

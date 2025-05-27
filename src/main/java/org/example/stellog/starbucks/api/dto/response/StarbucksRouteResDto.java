@@ -4,7 +4,7 @@ import java.util.List;
 
 public record StarbucksRouteResDto(
         String name,
-        boolean isAuthor,
+        boolean isOwner,
         List<StarbucksInfoResDto> starbucksList
 ) {
 }

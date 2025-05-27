@@ -6,6 +6,6 @@ import java.util.List;
 
 @Builder
 public record ReviewListResDto(
-        List<ReviewInfoResDto> reviewList
+        List<ReviewInfoResDto> reviews
 ) {
 }

@@ -21,6 +21,8 @@ public class Review extends BaseEntity {
 
     private String content;
 
+    private String visitedAt;
+
     private String mainImgUrl;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -28,15 +30,17 @@ public class Review extends BaseEntity {
     private Room room;
 
     @Builder
-    private Review(String title, String content, String mainImgUrl, Room room) {
+    private Review(String title, String content, String visitedAt, String mainImgUrl, Room room) {
         this.title = title;
         this.content = content;
+        this.visitedAt = visitedAt;
         this.mainImgUrl = mainImgUrl;
         this.room = room;
     }
 
-    public void updateReview(String title, String content) {
+    public void updateReview(String title, String content, String visitedAt) {
         this.title = title;
         this.content = content;
+        this.visitedAt = visitedAt;
     }
 }

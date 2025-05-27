@@ -52,6 +52,7 @@ public class ReviewService {
         Review review = Review.builder()
                 .title(reviewReqDto.title())
                 .content(reviewReqDto.content())
+                .visitedAt(reviewReqDto.visitedAt())
                 .room(room)
                 .mainImgUrl(reviewReqDto.mainImgUrl())
                 .build();
@@ -126,9 +127,10 @@ public class ReviewService {
                 .starbucksId(starbucksReview.getStarbucks().getId())
                 .title(review.getTitle())
                 .content(review.getContent())
+                .createdAt(review.getCreatedAt().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")))
+                .visitedAt(review.getVisitedAt())
                 .author(reviewMember.getMember().getName())
                 .mainImgUrl(review.getMainImgUrl())
-                .date(review.getCreatedAt().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")))
                 .isAuthor(isAuthor)
                 .isLike(existsLikeByMemberAndReview(currentMember, review))
                 .likeCount(countLikesByReview(review))
@@ -143,7 +145,7 @@ public class ReviewService {
 
         validateAuthorOfReview(currentMember, reviewMember);
 
-        review.updateReview(reviewReqDto.title(), reviewReqDto.content());
+        review.updateReview(reviewReqDto.title(), reviewReqDto.content(), reviewReqDto.visitedAt());
     }
 
     @Transactional
@@ -293,8 +295,9 @@ public class ReviewService {
                             .starbucksId(starbucksReview.getStarbucks().getId())
                             .title(review.getTitle())
                             .content(review.getContent())
+                            .createdAt(review.getCreatedAt().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")))
+                            .visitedAt(review.getVisitedAt())
                             .author(reviewMember.getMember().getName())
-                            .date(review.getCreatedAt().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")))
                             .mainImgUrl(review.getMainImgUrl())
                             .isAuthor(isAuthor)
                             .isLike(likedReviewIds.contains(reviewId))

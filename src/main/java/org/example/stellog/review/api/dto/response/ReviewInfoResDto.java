@@ -8,9 +8,10 @@ public record ReviewInfoResDto(
         Long starbucksId,
         String title,
         String content,
+        String createdAt, // createAt
+        String visitedAt, // visitedAt
         String author,
         String mainImgUrl,
-        String date, // createAt
         boolean isAuthor,
         boolean isLike,
         int likeCount
