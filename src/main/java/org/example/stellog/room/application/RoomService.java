@@ -5,7 +5,9 @@ import org.example.stellog.global.util.MemberRoomService;
 import org.example.stellog.member.domain.Member;
 import org.example.stellog.member.domain.repository.MemberRepository;
 import org.example.stellog.member.exception.MemberNotFoundException;
+import org.example.stellog.review.domain.StarbucksReview;
 import org.example.stellog.review.domain.repository.ReviewRepository;
+import org.example.stellog.review.domain.repository.StarbucksReviewRepository;
 import org.example.stellog.room.api.dto.request.RoomReqDto;
 import org.example.stellog.room.api.dto.response.RoomDetailResDto;
 import org.example.stellog.room.api.dto.response.RoomListResDto;
@@ -18,6 +20,7 @@ import org.example.stellog.room.exception.UnauthorizedRoomAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.format.DateTimeFormatter;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -32,6 +35,7 @@ public class RoomService {
     private final RoomMemberRepository roomMemberRepository;
     private final MemberRoomService memberRoomService;
     private final ReviewRepository reviewRepository;
+    private final StarbucksReviewRepository starbucksReviewRepository;
 
     @Transactional
     public void createRoom(String email, RoomReqDto roomReqDto) {
@@ -87,16 +91,39 @@ public class RoomService {
         List<RoomMember> roomMembers = findRoomMemberByRoom(room);
 
         memberRoomService.validateMemberInRoom(currentMember, room);
+
         boolean isOwner = roomMembers.stream()
                 .anyMatch(rm -> rm.getMember().getId().equals(currentMember.getId()) && rm.isOwner());
+
         List<RoomDetailResDto.MemberInfoDto> memberDtos = roomMembers.stream()
                 .map(RoomMember::getMember)
                 .map(member -> new RoomDetailResDto.MemberInfoDto(member.getId(), member.getName()))
                 .toList();
-        int reviewCount = reviewRepository.countByRoom(room);
-        int starbucksCount = (int) reviewRepository.countDistinctStarbucksByRoomId(room.getId());
 
-        return new RoomDetailResDto(room.getId(), room.getName(), isOwner, memberDtos, reviewCount, starbucksCount);
+        int visitedStarbucksCount = (int) reviewRepository.countDistinctStarbucksByRoomId(room.getId());
+
+        List<RoomDetailResDto.ReviewInfoDto> reviewDtos = reviewRepository.findAllByRoom(room).stream()
+                .map(review -> {
+                    StarbucksReview sbReview = starbucksReviewRepository.findByReview(review)
+                            .orElseThrow(() -> new IllegalStateException("리뷰에 해당하는 StarbucksReview가 없습니다. reviewId=" + review.getId()));
+
+                    return new RoomDetailResDto.ReviewInfoDto(
+                            review.getId(),
+                            review.getTitle(),
+                            review.getCreatedAt().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")),
+                            sbReview.getStarbucks().getName()
+                    );
+                })
+                .toList();
+
+        return new RoomDetailResDto(
+                room.getId(),
+                room.getName(),
+                isOwner,
+                memberDtos,
+                visitedStarbucksCount,
+                reviewDtos
+        );
     }
 
     @Transactional
