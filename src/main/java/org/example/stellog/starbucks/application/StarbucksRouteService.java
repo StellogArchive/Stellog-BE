@@ -12,9 +12,12 @@ import org.example.stellog.starbucks.api.dto.response.StarbucksRouteResDto;
 import org.example.stellog.starbucks.domain.Starbucks;
 import org.example.stellog.starbucks.domain.StarbucksRoute;
 import org.example.stellog.starbucks.domain.StarbucksRouteItem;
+import org.example.stellog.starbucks.domain.StarbucksRouteLike;
 import org.example.stellog.starbucks.domain.repository.StarbucksRepository;
 import org.example.stellog.starbucks.domain.repository.StarbucksRouteItemRepository;
+import org.example.stellog.starbucks.domain.repository.StarbucksRouteLikeRepository;
 import org.example.stellog.starbucks.domain.repository.StarbucksRouteRepository;
+import org.example.stellog.starbucks.exception.DuplicateStarbucksRouteLikeException;
 import org.example.stellog.starbucks.exception.StarbucksNotFoundException;
 import org.example.stellog.starbucks.exception.StarbucksRouteNotFoundException;
 import org.springframework.stereotype.Service;
@@ -33,6 +36,7 @@ public class StarbucksRouteService {
     private final StarbucksRouteRepository starbucksRouteRepository;
     private final StarbucksRouteItemRepository starbucksRouteItemRepository;
     private final StarbucksRouteOptimizer starbucksRouteOptimizer;
+    private final StarbucksRouteLikeRepository starbucksRouteLikeRepository;
 
     @Transactional
     public Long createOptimizedRoute(String email, Long roomId, StarbucksRouteReqDto requestDto) {
@@ -150,10 +154,30 @@ public class StarbucksRouteService {
         starbucksRouteRepository.delete(route);
     }
 
-    private List<Long> extractStarbucksIds(List<StarbucksRouteItem> items) {
-        return items.stream()
-                .map(item -> item.getStarbucks().getId())
-                .collect(Collectors.toList());
+    @Transactional
+    public void likeStarbucksRoute(String email, Long routeId) {
+        Member currentMember = memberRoomService.findMemberByEmail(email);
+        StarbucksRoute route = findStarbucksRouteById(routeId);
+
+        if (starbucksRouteLikeRepository.existsByMemberAndStarbucksRoute(currentMember, route)) {
+            throw new DuplicateStarbucksRouteLikeException();
+        }
+
+        StarbucksRouteLike like = StarbucksRouteLike.builder()
+                .member(currentMember)
+                .starbucksRoute(route)
+                .build();
+        starbucksRouteLikeRepository.save(like);
+    }
+
+    @Transactional
+    public void unlikeStarbucksRoute(String email, Long routeId) {
+        Member currentMember = memberRoomService.findMemberByEmail(email);
+        StarbucksRoute route = findStarbucksRouteById(routeId);
+        StarbucksRouteLike routeLike = starbucksRouteLikeRepository.findByMemberAndStarbucksRoute(currentMember, route)
+                .orElseThrow(() -> new StarbucksNotFoundException("해당 최적화동선의 좋아요 정보를 찾을 수 업습니다."));
+
+        starbucksRouteLikeRepository.delete(routeLike);
     }
 
     private StarbucksRoute findStarbucksRouteById(Long routeId) {
