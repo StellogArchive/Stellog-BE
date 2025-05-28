@@ -8,6 +8,7 @@ import org.example.stellog.room.domain.Room;
 import org.example.stellog.starbucks.api.dto.request.StarbucksRouteReqDto;
 import org.example.stellog.starbucks.api.dto.response.StarbucksInfoResDto;
 import org.example.stellog.starbucks.api.dto.response.StarbucksRouteListResDto;
+import org.example.stellog.starbucks.api.dto.response.StarbucksRouteMemberRoomResDto;
 import org.example.stellog.starbucks.api.dto.response.StarbucksRouteResDto;
 import org.example.stellog.starbucks.domain.*;
 import org.example.stellog.starbucks.domain.repository.*;
@@ -81,15 +82,55 @@ public class StarbucksRouteService {
             throw new StarbucksRouteNotFoundException("해당 방에 연결된 경로가 없습니다. roomId=" + roomId);
         }
 
-        List<StarbucksRouteResDto> routeResponses = new ArrayList<>();
-        for (StarbucksRoute route : routes) {
-            List<StarbucksRouteItem> items = starbucksRouteItemRepository.findByStarbucksRouteOrderBySequenceOrder(route);
-            boolean isOwner = route.getMember().getEmail().equals(email);
-            List<StarbucksInfoResDto> starbucksDtos = convertToDtos(items);
-            routeResponses.add(new StarbucksRouteResDto(route.getName(), isOwner, starbucksDtos));
+        return getStarbucksRouteListResDto(email, routes);
+    }
+
+    public List<StarbucksRouteMemberRoomResDto> getRoutesByCurrentMember(String email) {
+        Member member = memberRoomService.findMemberByEmail(email);
+        List<StarbucksRoute> routes = starbucksRouteRepository.findAllByMember(member);
+
+        if (routes.isEmpty()) {
+            throw new StarbucksRouteNotFoundException("사용자가 생성한 최적화 동선이 없습니다.");
         }
 
-        return new StarbucksRouteListResDto(routeResponses);
+        // Room 기준으로 StarbucksRoute 그룹핑
+        Map<Room, List<StarbucksRoute>> groupedByRoom = routes.stream()
+                .collect(Collectors.groupingBy(StarbucksRoute::getRoom));
+
+        List<StarbucksRouteMemberRoomResDto> result = new ArrayList<>();
+
+        for (Map.Entry<Room, List<StarbucksRoute>> entry : groupedByRoom.entrySet()) {
+            Room room = entry.getKey();
+            List<StarbucksRoute> roomRoutes = entry.getValue();
+
+            List<StarbucksRouteResDto> routeDtos = roomRoutes.stream()
+                    .map(route -> {
+                        List<StarbucksRouteItem> items = starbucksRouteItemRepository.findByStarbucksRouteOrderBySequenceOrder(route);
+                        boolean isOwner = route.getMember().getEmail().equals(email);
+                        List<StarbucksInfoResDto> starbucksDtos = convertToDtos(items);
+                        return new StarbucksRouteResDto(route.getName(), isOwner, starbucksDtos);
+                    })
+                    .toList();
+
+            result.add(new StarbucksRouteMemberRoomResDto(room.getId(), room.getName(), routeDtos));
+        }
+
+        return result;
+    }
+
+    public StarbucksRouteListResDto getBookmarkedRoutes(String email) {
+        Member member = memberRoomService.findMemberByEmail(email);
+        List<StarbucksRouteBookmark> bookmarks = starbucksRouteBookmarkRepository.findAllByMember(member);
+
+        if (bookmarks.isEmpty()) {
+            throw new StarbucksRouteNotFoundException("북마크된 최적화 동선이 없습니다.");
+        }
+
+        List<StarbucksRoute> routes = bookmarks.stream()
+                .map(StarbucksRouteBookmark::getStarbucksRoute)
+                .collect(Collectors.toList());
+
+        return getStarbucksRouteListResDto(email, routes);
     }
 
     public StarbucksRouteResDto getRouteDetail(String email, Long routeId) {
@@ -212,5 +253,17 @@ public class StarbucksRouteService {
                     return new StarbucksInfoResDto(s.getId(), s.getName(), s.getLatitude(), s.getLongitude());
                 })
                 .toList();
+    }
+
+    private StarbucksRouteListResDto getStarbucksRouteListResDto(String email, List<StarbucksRoute> routes) {
+        List<StarbucksRouteResDto> routeResponses = new ArrayList<>();
+        for (StarbucksRoute route : routes) {
+            List<StarbucksRouteItem> items = starbucksRouteItemRepository.findByStarbucksRouteOrderBySequenceOrder(route);
+            boolean isOwner = route.getMember().getEmail().equals(email);
+            List<StarbucksInfoResDto> starbucksDtos = convertToDtos(items);
+            routeResponses.add(new StarbucksRouteResDto(route.getName(), isOwner, starbucksDtos));
+        }
+
+        return new StarbucksRouteListResDto(routeResponses);
     }
 }

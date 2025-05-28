@@ -9,9 +9,12 @@ import org.example.stellog.global.annotation.AuthenticatedEmail;
 import org.example.stellog.global.template.RspTemplate;
 import org.example.stellog.starbucks.api.dto.request.StarbucksRouteReqDto;
 import org.example.stellog.starbucks.api.dto.response.StarbucksRouteListResDto;
+import org.example.stellog.starbucks.api.dto.response.StarbucksRouteMemberRoomResDto;
 import org.example.stellog.starbucks.api.dto.response.StarbucksRouteResDto;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
+
+import java.util.List;
 
 @Tag(name = "StarbucksRoute", description = "스타벅스 최적화 동선 관련 API")
 public interface StarbucksRouteControllerDocs {
@@ -46,8 +49,20 @@ public interface StarbucksRouteControllerDocs {
     RspTemplate<StarbucksRouteResDto> getRouteDetail(@AuthenticatedEmail String email, @PathVariable Long routeId);
 
     @Operation(
-            summary = "스타벅스 최적화 동선 목록 수정",
-            description = "주어진 스타벅스 최적화 동선 목록을 수정합니다."
+            summary = "사용자가 생성한 스타벅스 최적화 동선 조회",
+            description = "현재 사용자가 생성한 스타벅스 최적화 동선을 조회합니다."
+    )
+    RspTemplate<List<StarbucksRouteMemberRoomResDto>> getRoutesByCurrentMember(@AuthenticatedEmail String email);
+
+    @Operation(
+            summary = "북마크된 스타벅스 최적화 동선 조회",
+            description = "현재 사용자가 북마크한 스타벅스 최적화 동선을 조회합니다."
+    )
+    RspTemplate<StarbucksRouteListResDto> getBookmarkedRoutes(@AuthenticatedEmail String email);
+
+    @Operation(
+            summary = "최적화 동선의 스타벅스 목록 수정",
+            description = "주어진 최적화 동선의 스타벅스 목록을 수정합니다."
     )
     RspTemplate<Void> updateRoute(@AuthenticatedEmail String email, @PathVariable Long routeId, @RequestBody StarbucksRouteReqDto starbucksRouteReqDto);
 

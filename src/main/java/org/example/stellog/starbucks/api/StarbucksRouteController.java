@@ -5,10 +5,13 @@ import org.example.stellog.global.annotation.AuthenticatedEmail;
 import org.example.stellog.global.template.RspTemplate;
 import org.example.stellog.starbucks.api.dto.request.StarbucksRouteReqDto;
 import org.example.stellog.starbucks.api.dto.response.StarbucksRouteListResDto;
+import org.example.stellog.starbucks.api.dto.response.StarbucksRouteMemberRoomResDto;
 import org.example.stellog.starbucks.api.dto.response.StarbucksRouteResDto;
 import org.example.stellog.starbucks.application.StarbucksRouteService;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -26,6 +29,17 @@ public class StarbucksRouteController implements StarbucksRouteControllerDocs {
     public RspTemplate<StarbucksRouteListResDto> getRouteByRoomId(@AuthenticatedEmail String email, @PathVariable(value = "roomId") Long roomId) {
         StarbucksRouteListResDto route = starbucksRouteService.getRouteByRoomId(email, roomId);
         return new RspTemplate<>(HttpStatus.OK, "방 별 스타벅스 최적화 동선을 성공적으로 조회하였습니다.", route);
+    }
+
+    @GetMapping("/member")
+    public RspTemplate<List<StarbucksRouteMemberRoomResDto>> getRoutesByCurrentMember(@AuthenticatedEmail String email) {
+        return new RspTemplate<>(HttpStatus.OK, "사용자가 생성한 최적화 동선을 성공적으로 조회하였습니다.", starbucksRouteService.getRoutesByCurrentMember(email));
+    }
+
+    @GetMapping("/bookmark")
+    public RspTemplate<StarbucksRouteListResDto> getBookmarkedRoutes(@AuthenticatedEmail String email) {
+        StarbucksRouteListResDto bookmarkedRoutes = starbucksRouteService.getBookmarkedRoutes(email);
+        return new RspTemplate<>(HttpStatus.OK, "북마크된 스타벅스 최적화 동선을 성공적으로 조회하였습니다.", bookmarkedRoutes);
     }
 
     @GetMapping("route/{routeId}")
