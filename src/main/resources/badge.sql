@@ -1,10 +1,10 @@
 CREATE TABLE IF NOT EXISTS badge
 (
-    id     INT PRIMARY KEY,
-    name   varchar(100)
+    badge_id    INT PRIMARY KEY,
+    name        varchar(100)
 );
 
-INSERT IGNORE INTO badge (id, name)
+INSERT IGNORE INTO badge (badge_id, name)
 VALUES (1, '스타벅스 첫 방문'),
        (2, '스타벅스 5곳 방문'),
        (3, '스타벅스 10곳 방문'),

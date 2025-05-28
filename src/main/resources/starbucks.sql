@@ -1,13 +1,13 @@
 CREATE TABLE IF NOT EXISTS starbucks
 (
-    id        INT PRIMARY KEY,
-    name      VARCHAR(100),
-    address   VARCHAR(255),
-    latitude  DOUBLE,
-    longitude DOUBLE
+    starbucks_id    INT PRIMARY KEY,
+    name            VARCHAR(100),
+    address         VARCHAR(255),
+    latitude        DOUBLE,
+    longitude       DOUBLE
 );
 
-INSERT IGNORE INTO starbucks (id, name, address, latitude, longitude)
+INSERT IGNORE INTO starbucks (starbucks_id, name, address, latitude, longitude)
 VALUES (1, '제주세화DT', '제주특별자치도 제주시 구좌읍 일주동로 3121', 33.522827, 126.853291),
        (2, '더제주송당파크R', '제주특별자치도 제주시 구좌읍 비자림로 1189', 33.435586, 126.731656),
        (3, '제주함덕', '제주특별자치도 제주시 조천읍 조함해안로 522', 33.542497, 126.668694),

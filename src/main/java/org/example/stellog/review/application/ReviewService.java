@@ -1,6 +1,7 @@
 package org.example.stellog.review.application;
 
 import lombok.RequiredArgsConstructor;
+import org.example.stellog.badge.application.BadgeService;
 import org.example.stellog.global.util.MemberRoomService;
 import org.example.stellog.member.domain.Member;
 import org.example.stellog.review.api.dto.request.ReviewReqDto;
@@ -41,6 +42,7 @@ public class ReviewService {
     private final StarbucksReviewRepository starbucksReviewRepository;
     private final ReviewMemberRepository reviewMemberRepository;
     private final ReviewLikeRepository reviewLikeRepository;
+    private final BadgeService badgeService;
 
     @Transactional
     public void createReview(String email, Long roomId, ReviewReqDto reviewReqDto) {
@@ -69,6 +71,7 @@ public class ReviewService {
                 .starbucks(starbucks)
                 .build();
         starbucksReviewRepository.save(starbucksReview);
+        badgeService.checkAndGrantBadge(room);
     }
 
     public ReviewListResDto getAllReviewsByStarbucksId(String email, Long starbucksId) {

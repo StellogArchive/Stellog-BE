@@ -1,5 +1,6 @@
 package org.example.stellog.badge.domain;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
@@ -14,6 +15,7 @@ import lombok.NoArgsConstructor;
 @Getter
 public class Badge {
     @Id
+    @Column(name = "badge_id")
     private Long id;
 
     private String name;
