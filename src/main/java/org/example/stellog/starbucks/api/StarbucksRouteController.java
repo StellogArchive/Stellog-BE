@@ -61,4 +61,20 @@ public class StarbucksRouteController implements StarbucksRouteControllerDocs {
                 HttpStatus.NO_CONTENT,
                 "스타벅스 최적화 동선에 좋아요를 성공적으로 취소하였습니다.");
     }
+
+    @PostMapping("/bookmark/{routeId}")
+    public RspTemplate<Void> saveStarbucksRouteBookmark(@AuthenticatedEmail String email, @PathVariable(value = "routeId") Long routeId) {
+        starbucksRouteService.saveStarbucksRouteBookmark(email, routeId);
+        return new RspTemplate<>(
+                HttpStatus.CREATED,
+                "스타벅스 최적화 동선을 북마크에 추가하였습니다.");
+    }
+
+    @DeleteMapping("/bookmark/{routeId}")
+    public RspTemplate<Void> deleteStarbucksRouteBookmark(@AuthenticatedEmail String email, @PathVariable(value = "routeId") Long routeId) {
+        starbucksRouteService.deleteStarbucksRouteBookmark(email, routeId);
+        return new RspTemplate<>(
+                HttpStatus.NO_CONTENT,
+                "스타벅스 최적화 동선을 북마크에서 삭제하였습니다.");
+    }
 }

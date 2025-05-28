@@ -68,4 +68,16 @@ public interface StarbucksRouteControllerDocs {
             description = "주어진 스타벅스 최적화 동선에 좋아요를 취소합니다."
     )
     RspTemplate<Void> unlikeStarbucksRoute(@AuthenticatedEmail String email, @PathVariable Long routeId);
+
+    @Operation(
+            summary = "스타벅스 최적화 동선 북마크 저장",
+            description = "주어진 스타벅스 최적화 동선을 북마크에 저장합니다."
+    )
+    RspTemplate<Void> saveStarbucksRouteBookmark(@AuthenticatedEmail String email, @PathVariable Long routeId);
+
+    @Operation(
+            summary = "스타벅스 최적화 동선 북마크 삭제",
+            description = "주어진 스타벅스 최적화 동선을 북마크에서 삭제합니다."
+    )
+    RspTemplate<Void> deleteStarbucksRouteBookmark(@AuthenticatedEmail String email, @PathVariable Long routeId);
 }

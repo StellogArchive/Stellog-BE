@@ -9,16 +9,11 @@ import org.example.stellog.starbucks.api.dto.request.StarbucksRouteReqDto;
 import org.example.stellog.starbucks.api.dto.response.StarbucksInfoResDto;
 import org.example.stellog.starbucks.api.dto.response.StarbucksRouteListResDto;
 import org.example.stellog.starbucks.api.dto.response.StarbucksRouteResDto;
-import org.example.stellog.starbucks.domain.Starbucks;
-import org.example.stellog.starbucks.domain.StarbucksRoute;
-import org.example.stellog.starbucks.domain.StarbucksRouteItem;
-import org.example.stellog.starbucks.domain.StarbucksRouteLike;
-import org.example.stellog.starbucks.domain.repository.StarbucksRepository;
-import org.example.stellog.starbucks.domain.repository.StarbucksRouteItemRepository;
-import org.example.stellog.starbucks.domain.repository.StarbucksRouteLikeRepository;
-import org.example.stellog.starbucks.domain.repository.StarbucksRouteRepository;
+import org.example.stellog.starbucks.domain.*;
+import org.example.stellog.starbucks.domain.repository.*;
 import org.example.stellog.starbucks.exception.DuplicateStarbucksRouteLikeException;
 import org.example.stellog.starbucks.exception.StarbucksNotFoundException;
+import org.example.stellog.starbucks.exception.StarbucksRouteBookmarkNotFoundException;
 import org.example.stellog.starbucks.exception.StarbucksRouteNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -37,6 +32,7 @@ public class StarbucksRouteService {
     private final StarbucksRouteItemRepository starbucksRouteItemRepository;
     private final StarbucksRouteOptimizer starbucksRouteOptimizer;
     private final StarbucksRouteLikeRepository starbucksRouteLikeRepository;
+    private final StarbucksRouteBookmarkRepository starbucksRouteBookmarkRepository;
 
     @Transactional
     public Long createOptimizedRoute(String email, Long roomId, StarbucksRouteReqDto requestDto) {
@@ -178,6 +174,30 @@ public class StarbucksRouteService {
                 .orElseThrow(() -> new StarbucksNotFoundException("해당 최적화동선의 좋아요 정보를 찾을 수 업습니다."));
 
         starbucksRouteLikeRepository.delete(routeLike);
+    }
+
+    @Transactional
+    public void saveStarbucksRouteBookmark(String email, Long routeId) {
+        Member currentMember = memberRoomService.findMemberByEmail(email);
+        StarbucksRoute route = findStarbucksRouteById(routeId);
+        if (starbucksRouteBookmarkRepository.existsByMemberAndStarbucksRoute(currentMember, route)) {
+            throw new DuplicateStarbucksRouteLikeException("이미 해당 경로를 북마크했습니다.");
+        }
+        StarbucksRouteBookmark bookmark = StarbucksRouteBookmark.builder()
+                .member(currentMember)
+                .starbucksRoute(route)
+                .build();
+        starbucksRouteBookmarkRepository.save(bookmark);
+    }
+
+    @Transactional
+    public void deleteStarbucksRouteBookmark(String email, Long routeId) {
+        Member currentMember = memberRoomService.findMemberByEmail(email);
+        StarbucksRoute route = findStarbucksRouteById(routeId);
+        StarbucksRouteBookmark bookmark = starbucksRouteBookmarkRepository.findByMemberAndStarbucksRoute(currentMember, route)
+                .orElseThrow(() -> new StarbucksRouteBookmarkNotFoundException("해당 최적화동선의 북마크 정보를 찾을 수 없습니다."));
+
+        starbucksRouteBookmarkRepository.delete(bookmark);
     }
 
     private StarbucksRoute findStarbucksRouteById(Long routeId) {
