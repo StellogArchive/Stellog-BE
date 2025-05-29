@@ -71,7 +71,7 @@ public class ReviewService {
                 .starbucks(starbucks)
                 .build();
         starbucksReviewRepository.save(starbucksReview);
-        badgeService.checkAndGrantBadge(room);
+        badgeService.checkAndGrantBadgeByRoom(room);
     }
 
     public ReviewListResDto getAllReviewsByStarbucksId(String email, Long starbucksId) {

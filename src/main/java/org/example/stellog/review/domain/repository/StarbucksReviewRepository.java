@@ -25,5 +25,4 @@ public interface StarbucksReviewRepository extends JpaRepository<StarbucksReview
             "FROM StarbucksReview sr " +
             "WHERE sr.review.room = :room")
     long countDistinctStarbucksByRoom(@Param("room") Room room);
-
 }

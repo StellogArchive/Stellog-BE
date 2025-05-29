@@ -4,14 +4,12 @@ import lombok.RequiredArgsConstructor;
 import org.example.stellog.global.annotation.AuthenticatedEmail;
 import org.example.stellog.global.template.RspTemplate;
 import org.example.stellog.starbucks.api.dto.request.StarbucksRouteReqDto;
+import org.example.stellog.starbucks.api.dto.response.StarbucksListRouteMemberRoomResDto;
 import org.example.stellog.starbucks.api.dto.response.StarbucksRouteListResDto;
-import org.example.stellog.starbucks.api.dto.response.StarbucksRouteMemberRoomResDto;
 import org.example.stellog.starbucks.api.dto.response.StarbucksRouteResDto;
 import org.example.stellog.starbucks.application.StarbucksRouteService;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -20,9 +18,9 @@ public class StarbucksRouteController implements StarbucksRouteControllerDocs {
     private final StarbucksRouteService starbucksRouteService;
 
     @PostMapping("/optimize/{roomId}")
-    public RspTemplate<String> createRoute(@AuthenticatedEmail String email, @PathVariable(value = "roomId") Long roomId, @RequestBody StarbucksRouteReqDto starbucksRouteReqDto) {
-        Long routeId = starbucksRouteService.createOptimizedRoute(email, roomId, starbucksRouteReqDto);
-        return new RspTemplate<>(HttpStatus.CREATED, "최적화 동선이 저장되었습니다.", routeId.toString());
+    public RspTemplate<Void> createRoute(@AuthenticatedEmail String email, @PathVariable(value = "roomId") Long roomId, @RequestBody StarbucksRouteReqDto starbucksRouteReqDto) {
+        starbucksRouteService.createOptimizedRoute(email, roomId, starbucksRouteReqDto);
+        return new RspTemplate<>(HttpStatus.CREATED, "최적화 동선이 저장되었습니다.");
     }
 
     @GetMapping("room/{roomId}")
@@ -32,7 +30,7 @@ public class StarbucksRouteController implements StarbucksRouteControllerDocs {
     }
 
     @GetMapping("/member")
-    public RspTemplate<List<StarbucksRouteMemberRoomResDto>> getRoutesByCurrentMember(@AuthenticatedEmail String email) {
+    public RspTemplate<StarbucksListRouteMemberRoomResDto> getRoutesByCurrentMember(@AuthenticatedEmail String email) {
         return new RspTemplate<>(HttpStatus.OK, "사용자가 생성한 최적화 동선을 성공적으로 조회하였습니다.", starbucksRouteService.getRoutesByCurrentMember(email));
     }
 
@@ -40,6 +38,12 @@ public class StarbucksRouteController implements StarbucksRouteControllerDocs {
     public RspTemplate<StarbucksRouteListResDto> getBookmarkedRoutes(@AuthenticatedEmail String email) {
         StarbucksRouteListResDto bookmarkedRoutes = starbucksRouteService.getBookmarkedRoutes(email);
         return new RspTemplate<>(HttpStatus.OK, "북마크된 스타벅스 최적화 동선을 성공적으로 조회하였습니다.", bookmarkedRoutes);
+    }
+
+    @GetMapping("/popular")
+    public RspTemplate<StarbucksRouteListResDto> getPopularRoutes(@AuthenticatedEmail String email) {
+        StarbucksRouteListResDto popularRoutes = starbucksRouteService.getPopularRoutes(email);
+        return new RspTemplate<>(HttpStatus.OK, "인기 있는 스타벅스 최적화 동선을 성공적으로 조회하였습니다.", popularRoutes);
     }
 
     @GetMapping("route/{routeId}")
@@ -58,22 +62,6 @@ public class StarbucksRouteController implements StarbucksRouteControllerDocs {
     public RspTemplate<Void> deleteRoute(@AuthenticatedEmail String email, @PathVariable(value = "routeId") Long routeId) {
         starbucksRouteService.deleteRoute(email, routeId);
         return new RspTemplate<>(HttpStatus.NO_CONTENT, "스타벅스 최적화 동선이 성공적으로 삭제되었습니다.");
-    }
-
-    @PostMapping("/like/{routeId}")
-    public RspTemplate<Void> likeStarbucksRoute(@AuthenticatedEmail String email, @PathVariable(value = "routeId") Long routeId) {
-        starbucksRouteService.likeStarbucksRoute(email, routeId);
-        return new RspTemplate<>(
-                HttpStatus.CREATED,
-                "스타벅스 최적화 동선에 좋아요를 성공적으로 추가하였습니다.");
-    }
-
-    @DeleteMapping("/like/{routeId}")
-    public RspTemplate<Void> unlikeStarbucksRoute(@AuthenticatedEmail String email, @PathVariable(value = "routeId") Long routeId) {
-        starbucksRouteService.unlikeStarbucksRoute(email, routeId);
-        return new RspTemplate<>(
-                HttpStatus.NO_CONTENT,
-                "스타벅스 최적화 동선에 좋아요를 성공적으로 취소하였습니다.");
     }
 
     @PostMapping("/bookmark/{routeId}")

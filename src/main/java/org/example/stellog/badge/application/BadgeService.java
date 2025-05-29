@@ -19,7 +19,7 @@ public class BadgeService {
     private final StarbucksReviewRepository starbucksReviewRepository;
     private final RoomBadgeRepository roomBadgeRepository;
 
-    public void checkAndGrantBadge(Room room) {
+    public void checkAndGrantBadgeByRoom(Room room) {
         long uniqueStarbucksCount = starbucksReviewRepository.countDistinctStarbucksByRoom(room);
 
         if (uniqueStarbucksCount >= 1) {
@@ -38,6 +38,15 @@ public class BadgeService {
             grantBadge(room, 5L); // 전체 방문
         }
     }
+
+//    public void checkAndGrantBadgeByRoom(StarbucksRoute starbucksRoute) {
+//        long starbucksLikeCount = starbucksRouteLikeRepository.count(starbucksRoute);
+//        Room room = starbucksRoute.getRoom();
+//
+//        if (starbucksLikeCount >= 100) {
+//            grantBadge(room, 6L);
+//        }
+//    }
 
     private void grantBadge(Room room, Long badgeId) {
         log.info("Room {}: granted badge {}", room.getId(), badgeId);
