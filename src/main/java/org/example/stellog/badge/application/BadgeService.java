@@ -9,6 +9,7 @@ import org.example.stellog.badge.domain.repository.RoomBadgeRepository;
 import org.example.stellog.badge.exception.BadgeNotFoundException;
 import org.example.stellog.review.domain.repository.StarbucksReviewRepository;
 import org.example.stellog.room.domain.Room;
+import org.example.stellog.starbucks.domain.repository.StarbucksRouteBookmarkRepository;
 import org.springframework.stereotype.Service;
 
 @Slf4j
@@ -18,9 +19,11 @@ public class BadgeService {
     private final BadgeRepository badgeRepository;
     private final StarbucksReviewRepository starbucksReviewRepository;
     private final RoomBadgeRepository roomBadgeRepository;
+    private final StarbucksRouteBookmarkRepository starbucksRouteBookmarkRepository;
 
     public void checkAndGrantBadgeByRoom(Room room) {
         long uniqueStarbucksCount = starbucksReviewRepository.countDistinctStarbucksByRoom(room);
+        long starbucksBookmarkCount = starbucksRouteBookmarkRepository.countByRoom(room);
 
         if (uniqueStarbucksCount >= 1) {
             grantBadge(room, 1L); // 첫 방문
@@ -37,16 +40,10 @@ public class BadgeService {
         if (uniqueStarbucksCount >= 33) {
             grantBadge(room, 5L); // 전체 방문
         }
+        if (starbucksBookmarkCount >= 100) {
+            grantBadge(room, 6L);
+        }
     }
-
-//    public void checkAndGrantBadgeByRoom(StarbucksRoute starbucksRoute) {
-//        long starbucksLikeCount = starbucksRouteLikeRepository.count(starbucksRoute);
-//        Room room = starbucksRoute.getRoom();
-//
-//        if (starbucksLikeCount >= 100) {
-//            grantBadge(room, 6L);
-//        }
-//    }
 
     private void grantBadge(Room room, Long badgeId) {
         log.info("Room {}: granted badge {}", room.getId(), badgeId);

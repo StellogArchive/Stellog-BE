@@ -226,6 +226,8 @@ public class StarbucksRouteService {
                 .starbucksRoute(route)
                 .build();
         starbucksRouteBookmarkRepository.save(bookmark);
+        Room room = route.getRoom();
+        badgeService.checkAndGrantBadgeByRoom(room);
     }
 
     @Transactional

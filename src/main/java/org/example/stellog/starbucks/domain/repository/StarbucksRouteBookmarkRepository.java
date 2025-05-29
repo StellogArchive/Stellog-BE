@@ -1,11 +1,13 @@
 package org.example.stellog.starbucks.domain.repository;
 
 import org.example.stellog.member.domain.Member;
+import org.example.stellog.room.domain.Room;
 import org.example.stellog.starbucks.domain.StarbucksRoute;
 import org.example.stellog.starbucks.domain.StarbucksRouteBookmark;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 import java.util.Optional;
@@ -24,4 +26,11 @@ public interface StarbucksRouteBookmarkRepository extends JpaRepository<Starbuck
     List<StarbucksRoute> findTopRoutesByBookmarkCount(Pageable pageable);
 
     int countByStarbucksRoute(StarbucksRoute route);
+
+    @Query("""
+            SELECT COUNT(b)
+            FROM StarbucksRouteBookmark b
+            WHERE b.starbucksRoute.room = :room
+            """)
+    int countByRoom(@Param("room") Room room);
 }
