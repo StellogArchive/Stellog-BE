@@ -6,6 +6,7 @@ public record MemberInfoResDto(
         String nickName,
         String email,
         String profileImgUrl,
+        String provider,
         int roomCount,
         int reviewCount,
         int followingCount,
