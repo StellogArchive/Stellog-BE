@@ -43,7 +43,11 @@ public class FollowService {
         List<FollowInfoResDto> followDtoList = followRepository.findAllByFollower(currentMember)
                 .stream()
                 .map(Follow::getFollowing)
-                .map(member -> new FollowInfoResDto(member.getName(), member.getNickName()))
+                .map(member -> new FollowInfoResDto(
+                        member.getId(),
+                        member.getName(),
+                        member.getNickName(),
+                        member.getProfileImgUrl()))
                 .toList();
 
         return new FollowListResDto(followDtoList);
@@ -55,7 +59,11 @@ public class FollowService {
         List<FollowInfoResDto> followingDtoList = followRepository.findAllByFollowing(currentMember)
                 .stream()
                 .map(Follow::getFollower)
-                .map(member -> new FollowInfoResDto(member.getName(), member.getNickName()))
+                .map(member -> new FollowInfoResDto(
+                        member.getId(),
+                        member.getName(),
+                        member.getNickName(),
+                        member.getProfileImgUrl()))
                 .toList();
 
         return new FollowListResDto(followingDtoList);

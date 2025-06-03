@@ -9,6 +9,7 @@ import org.example.stellog.member.domain.repository.MemberRepository;
 import org.example.stellog.member.exception.MemberNotFoundException;
 import org.example.stellog.review.domain.Review;
 import org.example.stellog.review.domain.StarbucksReview;
+import org.example.stellog.review.domain.repository.ReviewMemberRepository;
 import org.example.stellog.review.domain.repository.ReviewRepository;
 import org.example.stellog.review.domain.repository.StarbucksReviewRepository;
 import org.example.stellog.room.api.dto.request.RoomReqDto;
@@ -40,6 +41,7 @@ public class RoomService {
     private final ReviewRepository reviewRepository;
     private final StarbucksReviewRepository starbucksReviewRepository;
     private final RoomBadgeRepository roomBadgeRepository;
+    private final ReviewMemberRepository reviewMemberRepository;
 
     @Transactional
     public void createRoom(String email, RoomReqDto roomReqDto) {
@@ -153,13 +155,15 @@ public class RoomService {
         Room room = memberRoomService.findRoomById(roomId);
         List<RoomMember> roomMembers = findRoomMemberByRoom(room);
 
+        checkRoomOwner(currentMember, room);
         List<Review> reviews = reviewRepository.findAllByRoom(room);
 
-        checkRoomOwner(currentMember, room);
-
-        roomMemberRepository.deleteAll(roomMembers);
-        roomRepository.delete(room);
+        reviewMemberRepository.deleteAllByReviewIn(reviews);
         starbucksReviewRepository.deleteAllByReviewIn(reviews);
+        reviewRepository.deleteAll(reviews);
+        roomMemberRepository.deleteAll(roomMembers);
+        roomBadgeRepository.deleteAllByRoom(room);
+        roomRepository.delete(room);
     }
 
     private List<RoomMember> findRoomMemberByRoom(Room room) {
