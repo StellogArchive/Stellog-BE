@@ -1,5 +1,6 @@
 package org.example.stellog.starbucks.domain.repository;
 
+import org.example.stellog.member.domain.Member;
 import org.example.stellog.room.domain.Room;
 import org.example.stellog.starbucks.domain.StarbucksRoute;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -11,4 +12,6 @@ public interface StarbucksRouteRepository extends JpaRepository<StarbucksRoute, 
     Optional<StarbucksRoute> findByRoom(Room room);
 
     List<StarbucksRoute> findAllByRoom(Room room);
+
+    List<StarbucksRoute> findAllByMember(Member member);
 }

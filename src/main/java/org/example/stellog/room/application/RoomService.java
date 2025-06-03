@@ -1,6 +1,8 @@
 package org.example.stellog.room.application;
 
 import lombok.RequiredArgsConstructor;
+import org.example.stellog.badge.domain.RoomBadge;
+import org.example.stellog.badge.domain.repository.RoomBadgeRepository;
 import org.example.stellog.global.util.MemberRoomService;
 import org.example.stellog.member.domain.Member;
 import org.example.stellog.member.domain.repository.MemberRepository;
@@ -36,6 +38,7 @@ public class RoomService {
     private final MemberRoomService memberRoomService;
     private final ReviewRepository reviewRepository;
     private final StarbucksReviewRepository starbucksReviewRepository;
+    private final RoomBadgeRepository roomBadgeRepository;
 
     @Transactional
     public void createRoom(String email, RoomReqDto roomReqDto) {
@@ -102,6 +105,11 @@ public class RoomService {
 
         int visitedStarbucksCount = (int) reviewRepository.countDistinctStarbucksByRoomId(room.getId());
 
+        List<RoomBadge> roomBadges = roomBadgeRepository.findAllByRoom(room);
+        List<RoomDetailResDto.RoomBadgeDto> roomBadgeDtos = roomBadges.stream()
+                .map(rb -> new RoomDetailResDto.RoomBadgeDto(rb.getBadge().getId(), rb.getBadge().getName()))
+                .toList();
+
         List<RoomDetailResDto.ReviewInfoDto> reviewDtos = reviewRepository.findAllByRoom(room).stream()
                 .map(review -> {
                     StarbucksReview sbReview = starbucksReviewRepository.findByReview(review)
@@ -122,7 +130,8 @@ public class RoomService {
                 isOwner,
                 memberDtos,
                 visitedStarbucksCount,
-                reviewDtos
+                reviewDtos,
+                roomBadgeDtos
         );
     }
 

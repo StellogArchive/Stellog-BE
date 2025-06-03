@@ -8,7 +8,8 @@ public record RoomDetailResDto(
         boolean isOwner,
         List<MemberInfoDto> roomMembers,
         int visitedStarbucksCount,
-        List<ReviewInfoDto> reviews
+        List<ReviewInfoDto> reviews,
+        List<RoomBadgeDto> roomBadgeDtos
 ) {
     public record MemberInfoDto(
             Long id,
@@ -21,6 +22,12 @@ public record RoomDetailResDto(
             String title,
             String date,
             String starbucksName
+    ) {
+    }
+
+    public record RoomBadgeDto(
+            Long id,
+            String name
     ) {
     }
 }

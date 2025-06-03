@@ -21,4 +21,8 @@ public interface StarbucksReviewRepository extends JpaRepository<StarbucksReview
     @Query("SELECT sr FROM StarbucksReview sr WHERE sr.starbucks = :starbucks AND sr.review.room = :room")
     List<StarbucksReview> findAllByStarbucksAndRoom(@Param("starbucks") Starbucks starbucks, @Param("room") Room room);
 
+    @Query("SELECT COUNT(DISTINCT sr.starbucks.id) " +
+            "FROM StarbucksReview sr " +
+            "WHERE sr.review.room = :room")
+    long countDistinctStarbucksByRoom(@Param("room") Room room);
 }
