@@ -67,6 +67,7 @@ public class MemberService {
                 member.getNickName(),
                 member.getEmail(),
                 member.getProfileImgUrl(),
+                member.getProvider(),
                 roomCount,
                 reviewCount,
                 followingCount,
