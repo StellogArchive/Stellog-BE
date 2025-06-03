@@ -7,6 +7,7 @@ import org.example.stellog.global.util.MemberRoomService;
 import org.example.stellog.member.domain.Member;
 import org.example.stellog.member.domain.repository.MemberRepository;
 import org.example.stellog.member.exception.MemberNotFoundException;
+import org.example.stellog.review.domain.Review;
 import org.example.stellog.review.domain.StarbucksReview;
 import org.example.stellog.review.domain.repository.ReviewRepository;
 import org.example.stellog.review.domain.repository.StarbucksReviewRepository;
@@ -152,10 +153,13 @@ public class RoomService {
         Room room = memberRoomService.findRoomById(roomId);
         List<RoomMember> roomMembers = findRoomMemberByRoom(room);
 
+        List<Review> reviews = reviewRepository.findAllByRoom(room);
+
         checkRoomOwner(currentMember, room);
 
         roomMemberRepository.deleteAll(roomMembers);
         roomRepository.delete(room);
+        starbucksReviewRepository.deleteAllByReviewIn(reviews);
     }
 
     private List<RoomMember> findRoomMemberByRoom(Room room) {
