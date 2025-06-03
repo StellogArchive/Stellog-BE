@@ -94,10 +94,4 @@ public class FollowService {
         return followRepository.findByFollowerAndFollowing(currentMember, followMember)
                 .orElseThrow(() -> new NotFollowingException("팔로우하지 않은 유저입니다."));
     }
-
-    private void validateFollowExists(Member currentMember, Member followMember) {
-        if (!followRepository.existsByFollowerAndFollowing(currentMember, followMember)) {
-            throw new NotFollowingException("팔로우하지 않은 유저입니다.");
-        }
-    }
 }
