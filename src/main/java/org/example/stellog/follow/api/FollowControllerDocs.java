@@ -19,7 +19,7 @@ public interface FollowControllerDocs {
     RspTemplate<Void> saveFollow(@AuthenticatedEmail String email, @PathVariable Long memberId);
 
     @Operation(
-            summary = "팔로우 목록 조회",
+            summary = "팔로잉 목록 조회",
             description = "내가 팔로우한 사용자의 목록을 조회합니다."
     )
     @ApiResponse(
@@ -28,10 +28,10 @@ public interface FollowControllerDocs {
                     schema = @Schema(implementation = FollowListResDto.class)
             )
     )
-    RspTemplate<FollowListResDto> getFollows(@AuthenticatedEmail String email);
+    RspTemplate<FollowListResDto> getFollowings(@AuthenticatedEmail String email);
 
     @Operation(
-            summary = "팔로잉 목록 조회",
+            summary = "팔로워 목록 조회",
             description = "나를 팔로우한 사용자의 목록을 조회합니다."
     )
     @ApiResponse(
@@ -40,7 +40,7 @@ public interface FollowControllerDocs {
                     schema = @Schema(implementation = FollowListResDto.class)
             )
     )
-    RspTemplate<FollowListResDto> getFollowings(@AuthenticatedEmail String email);
+    RspTemplate<FollowListResDto> getFollowers(@AuthenticatedEmail String email);
 
     @Operation(
             summary = "팔로우 취소",

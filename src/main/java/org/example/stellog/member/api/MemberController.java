@@ -51,6 +51,16 @@ public class MemberController implements MemberControllerDocs {
         );
     }
 
+    @GetMapping("/info/{memberId}")
+    public RspTemplate<MemberInfoResDto> getMemberById(@AuthenticatedEmail String email,
+                                                       @PathVariable(value = "memberId") Long memberId) {
+        return new RspTemplate<>(
+                HttpStatus.OK,
+                "회원 정보가 성공적으로 조회되었습니다.",
+                memberService.getMemberById(email, memberId)
+        );
+    }
+
     @GetMapping()
     public RspTemplate<MemberListResDto> getAllMembers(@AuthenticatedEmail String email,
                                                        @RequestParam("name") String name) {

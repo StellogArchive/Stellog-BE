@@ -44,6 +44,19 @@ public interface MemberControllerDocs {
     RspTemplate<MemberInfoResDto> getMember(@AuthenticatedEmail String email);
 
     @Operation(
+            summary = "회원 정보 조회 (ID로)",
+            description = "회원 ID로 회원 정보를 조회합니다."
+    )
+    @ApiResponse(
+            content = @Content(
+                    mediaType = "application/json",
+                    schema = @Schema(implementation = MemberInfoResDto.class)
+            )
+    )
+    RspTemplate<MemberInfoResDto> getMemberById(@AuthenticatedEmail String email,
+                                                Long memberId);
+
+    @Operation(
             summary = "회원 목록 조회",
             description = "회원 목록을 조회합니다. 방 생성 시 참여할 회원을 선택하기 위해 사용됩니다. 이름 중 하나 글자만 입력해도 조회가 됩니다."
     )

@@ -37,7 +37,7 @@ public class FollowService {
         followRepository.save(follow);
     }
 
-    public FollowListResDto getFollows(String email) {
+    public FollowListResDto getFollowings(String email) {
         Member currentMember = memberRoomService.findMemberByEmail(email);
 
         List<FollowInfoResDto> followDtoList = followRepository.findAllByFollower(currentMember)
@@ -53,7 +53,7 @@ public class FollowService {
         return new FollowListResDto(followDtoList);
     }
 
-    public FollowListResDto getFollowings(String email) {
+    public FollowListResDto getFollowers(String email) {
         Member currentMember = memberRoomService.findMemberByEmail(email);
 
         List<FollowInfoResDto> followingDtoList = followRepository.findAllByFollowing(currentMember)
