@@ -6,6 +6,7 @@ public record StarbucksRouteResDto(
         Long id,
         String name,
         boolean isOwner,
+        boolean isBookmarked,
         int bookmarkCount,
         List<StarbucksInfoResDto> starbucksList
 ) {
