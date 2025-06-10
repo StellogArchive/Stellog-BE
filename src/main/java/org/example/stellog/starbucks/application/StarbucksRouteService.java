@@ -41,15 +41,12 @@ public class StarbucksRouteService {
     private final BadgeService badgeService;
 
     @Transactional
-    public Long createOptimizedRoute(String email, Long roomId, StarbucksRouteReqDto requestDto) {
+    public void createOptimizedRoute(String email, Long roomId, StarbucksRouteReqDto requestDto) {
         Member member = memberRoomService.findMemberByEmail(email);
         Room room = memberRoomService.findRoomById(roomId);
         memberRoomService.validateMemberInRoom(member, room);
 
         List<Starbucks> selected = starbucksRepository.findAllById(requestDto.starbucksIds());
-        if (selected.isEmpty()) {
-            throw new StarbucksNotFoundException("선택한 스타벅스 지점이 존재하지 않습니다.");
-        }
 
         List<Starbucks> optimalRoute = starbucksRouteOptimizer.findOptimalRoute(selected);
         if (optimalRoute.isEmpty()) {
@@ -74,7 +71,6 @@ public class StarbucksRouteService {
             starbucksRouteItemRepository.save(item);
         }
 
-        return route.getId();
     }
 
     public StarbucksRouteListResDto getRouteByRoomId(String email, Long roomId) {
@@ -83,9 +79,6 @@ public class StarbucksRouteService {
         memberRoomService.validateMemberInRoom(member, room);
 
         List<StarbucksRoute> routes = starbucksRouteRepository.findAllByRoom(room);
-        if (routes.isEmpty()) {
-            throw new StarbucksRouteNotFoundException("해당 방에 연결된 경로가 없습니다. roomId=" + roomId);
-        }
 
         return getStarbucksRouteListResDto(email, routes);
     }
@@ -94,11 +87,6 @@ public class StarbucksRouteService {
         Member member = memberRoomService.findMemberByEmail(email);
         List<StarbucksRoute> routes = starbucksRouteRepository.findAllByMember(member);
 
-        if (routes.isEmpty()) {
-            throw new StarbucksRouteNotFoundException("사용자가 생성한 최적화 동선이 없습니다.");
-        }
-
-        // Room 기준으로 StarbucksRoute 그룹핑
         Map<Room, List<StarbucksRoute>> groupedByRoom = routes.stream()
                 .collect(Collectors.groupingBy(StarbucksRoute::getRoom));
 
@@ -114,7 +102,7 @@ public class StarbucksRouteService {
                         boolean isOwner = route.getMember().getEmail().equals(email);
                         int bookmarkCount = starbucksRouteBookmarkRepository.countByStarbucksRoute(route);
                         List<StarbucksInfoResDto> starbucksDtos = convertToDtos(items);
-                        return new StarbucksRouteResDto(route.getName(), isOwner, bookmarkCount, starbucksDtos);
+                        return new StarbucksRouteResDto(route.getId(), route.getName(), isOwner, bookmarkCount, starbucksDtos);
                     })
                     .toList();
 
@@ -124,14 +112,9 @@ public class StarbucksRouteService {
         return new StarbucksListRouteMemberRoomResDto(result);
     }
 
-
     public StarbucksRouteListResDto getBookmarkedRoutes(String email) {
         Member member = memberRoomService.findMemberByEmail(email);
         List<StarbucksRouteBookmark> bookmarks = starbucksRouteBookmarkRepository.findAllByMember(member);
-
-        if (bookmarks.isEmpty()) {
-            throw new StarbucksRouteNotFoundException("북마크된 최적화 동선이 없습니다.");
-        }
 
         List<StarbucksRoute> routes = bookmarks.stream()
                 .map(StarbucksRouteBookmark::getStarbucksRoute)
@@ -147,10 +130,6 @@ public class StarbucksRouteService {
         List<StarbucksRoute> popularRoutes =
                 starbucksRouteBookmarkRepository.findTopRoutesByBookmarkCount(PageRequest.of(0, (int) totalRoutes));
 
-        if (popularRoutes.isEmpty()) {
-            throw new StarbucksRouteNotFoundException("인기 있는 최적화 동선이 없습니다.");
-        }
-
         return getStarbucksRouteListResDto(email, popularRoutes);
     }
 
@@ -165,7 +144,7 @@ public class StarbucksRouteService {
         int bookmarkCount = starbucksRouteBookmarkRepository.countByStarbucksRoute(route);
         List<StarbucksInfoResDto> starbucksDtos = convertToDtos(items);
 
-        return new StarbucksRouteResDto(route.getName(), isOwner, bookmarkCount, starbucksDtos);
+        return new StarbucksRouteResDto(route.getId(), route.getName(), isOwner, bookmarkCount, starbucksDtos);
     }
 
     @Transactional
@@ -261,7 +240,7 @@ public class StarbucksRouteService {
             boolean isOwner = route.getMember().getEmail().equals(email);
             int bookmarkCount = starbucksRouteBookmarkRepository.countByStarbucksRoute(route);
             List<StarbucksInfoResDto> starbucksDtos = convertToDtos(items);
-            routeResponses.add(new StarbucksRouteResDto(route.getName(), isOwner, bookmarkCount, starbucksDtos));
+            routeResponses.add(new StarbucksRouteResDto(route.getId(), route.getName(), isOwner, bookmarkCount, starbucksDtos));
         }
 
         return new StarbucksRouteListResDto(routeResponses);
