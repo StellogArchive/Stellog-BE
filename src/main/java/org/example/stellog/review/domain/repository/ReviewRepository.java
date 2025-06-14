@@ -18,4 +18,8 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
                 WHERE r.room.id = :roomId
             """)
     long countDistinctStarbucksByRoomId(@Param("roomId") Long roomId);
+
+    Review findByVisitedAtAndRoom(String visitedAt, Room room);
+
+    List<Review> findAllByVisitedAtAndRoom(String visitedAt, Room room);
 }
