@@ -1,4 +1,4 @@
-package org.example.stellog.calender.domain;
+package org.example.stellog.calendar.domain;
 
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -12,10 +12,10 @@ import org.example.stellog.room.domain.Room;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Calender extends BaseEntity {
+public class Calendar extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "calender_id")
+    @Column(name = "calendar_id")
     private Long id;
 
     private String name;
@@ -33,7 +33,7 @@ public class Calender extends BaseEntity {
     private Room room;
 
     @Builder
-    public Calender(String name, String date, boolean completed, Member member, Room room) {
+    public Calendar(String name, String date, boolean completed, Member member, Room room) {
         this.name = name;
         this.date = date;
         this.completed = completed;
@@ -49,7 +49,7 @@ public class Calender extends BaseEntity {
         this.completed = false;
     }
 
-    public void updateCalender(String name, String date) {
+    public void updateCalendar(String name, String date) {
         this.name = name;
         this.date = date;
     }
