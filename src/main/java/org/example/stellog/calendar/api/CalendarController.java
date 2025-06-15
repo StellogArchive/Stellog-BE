@@ -3,6 +3,7 @@ package org.example.stellog.calendar.api;
 import lombok.RequiredArgsConstructor;
 import org.example.stellog.calendar.api.dto.request.CalendarReqDto;
 import org.example.stellog.calendar.api.dto.response.CalendarListResDto;
+import org.example.stellog.calendar.api.dto.response.CalendarMonthCheckListResDto;
 import org.example.stellog.calendar.domain.service.CalendarService;
 import org.example.stellog.global.annotation.AuthenticatedEmail;
 import org.example.stellog.global.template.RspTemplate;
@@ -45,6 +46,14 @@ public class CalendarController implements CalendarControllerDocs {
                 HttpStatus.OK,
                 "캘린더 스타벅스 날짜 조회를 성공적으로 조회하였습니다.",
                 calendarService.getCalendarByDate(email, roomId, date));
+    }
+
+    @GetMapping("/{roomId}/month")
+    public RspTemplate<CalendarMonthCheckListResDto> getCalendarStatusByMonth(@AuthenticatedEmail String email, @PathVariable(value = "roomId") Long roomId, @RequestParam(name = "month") String yearMonth) {
+        return new RspTemplate<>(
+                HttpStatus.OK,
+                "캘린더 스타벅스 월별 조회를 성공적으로 조회하였습니다.",
+                calendarService.getCalendarStatusByMonth(email, roomId, yearMonth));
     }
 
     @PutMapping("/{roomId}/{calendarId}")

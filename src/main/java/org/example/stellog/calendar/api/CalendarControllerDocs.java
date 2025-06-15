@@ -7,6 +7,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.example.stellog.calendar.api.dto.request.CalendarReqDto;
 import org.example.stellog.calendar.api.dto.response.CalendarListResDto;
+import org.example.stellog.calendar.api.dto.response.CalendarMonthCheckListResDto;
 import org.example.stellog.global.annotation.AuthenticatedEmail;
 import org.example.stellog.global.template.RspTemplate;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -44,6 +45,18 @@ public interface CalendarControllerDocs {
             )
     )
     public RspTemplate<CalendarListResDto> getCalendarByDate(@AuthenticatedEmail String email, @PathVariable(value = "roomId") Long roomId, @RequestParam(name = "date") String date);
+
+    @Operation(
+            summary = "월 별 캘린더 조회",
+            description = "월 별로 캘린더 정보(스타벅스 리뷰, 일정)를 조회합니다."
+    )
+    @ApiResponse(
+            content = @Content(
+                    mediaType = "application/json",
+                    schema = @Schema(implementation = CalendarMonthCheckListResDto.class)
+            )
+    )
+    public RspTemplate<CalendarMonthCheckListResDto> getCalendarStatusByMonth(@AuthenticatedEmail String email, @PathVariable(value = "roomId") Long roomId, @RequestParam(name = "month") String yearMonth);
 
     @Operation(
             summary = "캘린더 일정 수정",

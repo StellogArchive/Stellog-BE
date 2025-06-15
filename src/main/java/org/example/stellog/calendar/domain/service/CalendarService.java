@@ -2,9 +2,7 @@ package org.example.stellog.calendar.domain.service;
 
 import lombok.RequiredArgsConstructor;
 import org.example.stellog.calendar.api.dto.request.CalendarReqDto;
-import org.example.stellog.calendar.api.dto.response.CalendarInfoResDto;
-import org.example.stellog.calendar.api.dto.response.CalendarListResDto;
-import org.example.stellog.calendar.api.dto.response.CalendarStarbucksResDto;
+import org.example.stellog.calendar.api.dto.response.*;
 import org.example.stellog.calendar.domain.Calendar;
 import org.example.stellog.calendar.domain.repository.CalendarRepository;
 import org.example.stellog.calendar.exception.CalendarNotFoundException;
@@ -18,7 +16,12 @@ import org.example.stellog.room.domain.Room;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
+import java.time.YearMonth;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -72,6 +75,29 @@ public class CalendarService {
         return new CalendarListResDto(date, calendarDtos, reviewDtos);
     }
 
+    public CalendarMonthCheckListResDto getCalendarStatusByMonth(String email, Long roomId, String yearMonth) {
+        Member member = memberRoomService.findMemberByEmail(email);
+        Room room = memberRoomService.findRoomById(roomId);
+        memberRoomService.validateMemberInRoom(member, room);
+
+        String datePattern = yearMonth + "%";
+
+        List<Calendar> calendars = calendarRepository.findAllByDateLikeAndMemberAndRoom(datePattern, member, room);
+        List<Review> reviews = reviewRepository.findAllByVisitedAtLikeAndRoom(datePattern, room);
+
+        Set<String> calendarDates = calendars.stream()
+                .map(Calendar::getDate)
+                .collect(Collectors.toSet());
+
+        Set<String> reviewDates = reviews.stream()
+                .map(Review::getVisitedAt)
+                .collect(Collectors.toSet());
+
+        List<CalendarDayCheckResDto> results = getCalendarDayCheckResDtos(yearMonth, calendarDates, reviewDates);
+
+        return new CalendarMonthCheckListResDto(yearMonth, results);
+    }
+
     @Transactional
     public void updateCalendar(String email, Long roomId, Long calendarId, CalendarReqDto calendarReqDto) {
         Calendar calendar = findCalendarAndValidateMemberAndRoom(email, roomId, calendarId);
@@ -112,5 +138,21 @@ public class CalendarService {
         return starbucksReviews.stream()
                 .map(sr -> new CalendarStarbucksResDto(sr.getReview().getId(), sr.getStarbucks().getName()))
                 .toList();
+    }
+
+    private List<CalendarDayCheckResDto> getCalendarDayCheckResDtos(String yearMonth, Set<String> calendarDates, Set<String> reviewDates) {
+        YearMonth ym = YearMonth.parse(yearMonth);
+        List<CalendarDayCheckResDto> results = new ArrayList<>();
+
+        for (int day = 1; day <= ym.lengthOfMonth(); day++) {
+            LocalDate current = ym.atDay(day);
+            String date = current.toString();
+
+            boolean hasCalendar = calendarDates.contains(date);
+            boolean hasReview = reviewDates.contains(date);
+
+            results.add(new CalendarDayCheckResDto(date, hasCalendar, hasReview));
+        }
+        return results;
     }
 }

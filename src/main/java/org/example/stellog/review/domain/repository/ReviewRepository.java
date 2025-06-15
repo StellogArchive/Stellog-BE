@@ -19,7 +19,9 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
             """)
     long countDistinctStarbucksByRoomId(@Param("roomId") Long roomId);
 
-    Review findByVisitedAtAndRoom(String visitedAt, Room room);
-
     List<Review> findAllByVisitedAtAndRoom(String visitedAt, Room room);
+
+    @Query("SELECT r FROM Review r WHERE r.visitedAt LIKE :datePattern AND r.room = :room")
+    List<Review> findAllByVisitedAtLikeAndRoom(@Param("datePattern") String datePattern,
+                                               @Param("room") Room room);
 }
