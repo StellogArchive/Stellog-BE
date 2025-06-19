@@ -135,8 +135,15 @@ public class CalendarService {
 
     private List<CalendarStarbucksResDto> toReviewDtos(List<Review> reviews) {
         List<StarbucksReview> starbucksReviews = starbucksReviewRepository.findAllByReviewIn(reviews);
+
         return starbucksReviews.stream()
-                .map(sr -> new CalendarStarbucksResDto(sr.getReview().getId(), sr.getStarbucks().getName()))
+                .collect(Collectors.toMap(
+                        sr -> sr.getStarbucks().getName(),
+                        sr -> new CalendarStarbucksResDto(sr.getStarbucks().getName()),
+                        (existing, replacement) -> existing
+                ))
+                .values()
+                .stream()
                 .toList();
     }
 
