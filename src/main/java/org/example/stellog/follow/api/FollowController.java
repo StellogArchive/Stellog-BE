@@ -21,18 +21,18 @@ public class FollowController implements FollowControllerDocs {
                 "팔로우가 성공적으로 등록되었습니다.");
     }
 
-    @GetMapping("/follow")
-    public RspTemplate<FollowListResDto> getFollows(@AuthenticatedEmail String email) {
-        return new RspTemplate<>(HttpStatus.OK,
-                "팔로우 목록 조회에 성공했습니다.",
-                followService.getFollows(email));
-    }
-
     @GetMapping("/following")
     public RspTemplate<FollowListResDto> getFollowings(@AuthenticatedEmail String email) {
         return new RspTemplate<>(HttpStatus.OK,
                 "팔로잉 목록 조회에 성공했습니다.",
                 followService.getFollowings(email));
+    }
+
+    @GetMapping("/followers")
+    public RspTemplate<FollowListResDto> getFollowers(@AuthenticatedEmail String email) {
+        return new RspTemplate<>(HttpStatus.OK,
+                "팔로워 목록 조회에 성공했습니다.",
+                followService.getFollowers(email));
     }
 
     @DeleteMapping("/{followId}")

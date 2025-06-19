@@ -19,7 +19,6 @@ public class ReviewController implements ReviewControllerDocs {
     @PostMapping("{roomId}")
     public RspTemplate<Void> createReview(@AuthenticatedEmail String email, @PathVariable(value = "roomId") Long roomId, @RequestBody ReviewReqDto reviewReqDto) {
         reviewService.createReview(email, roomId, reviewReqDto);
-        System.out.println(reviewReqDto.starbucksId());
         return new RspTemplate<>(
                 HttpStatus.CREATED,
                 "리뷰가 성공적으로 생성되었습니다.");

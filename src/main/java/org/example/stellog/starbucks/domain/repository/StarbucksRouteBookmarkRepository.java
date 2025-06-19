@@ -33,4 +33,6 @@ public interface StarbucksRouteBookmarkRepository extends JpaRepository<Starbuck
             WHERE b.starbucksRoute.room = :room
             """)
     int countByRoom(@Param("room") Room room);
+
+    void deleteAllByStarbucksRoute(StarbucksRoute route);
 }
