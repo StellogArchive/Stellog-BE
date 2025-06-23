@@ -8,6 +8,7 @@ import org.example.stellog.member.api.dto.response.MemberInfoResDto;
 import org.example.stellog.member.api.dto.response.MemberListResDto;
 import org.example.stellog.member.domain.Member;
 import org.example.stellog.member.domain.repository.MemberRepository;
+import org.example.stellog.member.exception.MemberNotFoundException;
 import org.example.stellog.review.domain.repository.ReviewMemberRepository;
 import org.example.stellog.room.domain.repository.RoomMemberRepository;
 import org.springframework.stereotype.Service;
@@ -42,6 +43,13 @@ public class MemberService {
         return createMemberInfoResDto(member);
     }
 
+    public MemberInfoResDto getMemberById(String email, Long memberId) {
+        Member member = memberRoomService.findMemberByEmail(email);
+        Member targetMember = memberRepository.findById(memberId)
+                .orElseThrow(() -> new MemberNotFoundException("사용자를 찾을 수 없습니다. id: " + memberId));
+        return createMemberInfoResDto(targetMember);
+    }
+
     public MemberListResDto getAllMembers(String email, String name) {
         Member currentMember = memberRoomService.findMemberByEmail(email);
         List<Member> members = memberRepository.findByNameContaining(name);
@@ -67,6 +75,7 @@ public class MemberService {
                 member.getNickName(),
                 member.getEmail(),
                 member.getProfileImgUrl(),
+                member.getProvider(),
                 roomCount,
                 reviewCount,
                 followingCount,

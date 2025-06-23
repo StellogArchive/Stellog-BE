@@ -37,25 +37,33 @@ public class FollowService {
         followRepository.save(follow);
     }
 
-    public FollowListResDto getFollows(String email) {
+    public FollowListResDto getFollowings(String email) {
         Member currentMember = memberRoomService.findMemberByEmail(email);
 
         List<FollowInfoResDto> followDtoList = followRepository.findAllByFollower(currentMember)
                 .stream()
                 .map(Follow::getFollowing)
-                .map(member -> new FollowInfoResDto(member.getName(), member.getNickName()))
+                .map(member -> new FollowInfoResDto(
+                        member.getId(),
+                        member.getName(),
+                        member.getNickName(),
+                        member.getProfileImgUrl()))
                 .toList();
 
         return new FollowListResDto(followDtoList);
     }
 
-    public FollowListResDto getFollowings(String email) {
+    public FollowListResDto getFollowers(String email) {
         Member currentMember = memberRoomService.findMemberByEmail(email);
 
         List<FollowInfoResDto> followingDtoList = followRepository.findAllByFollowing(currentMember)
                 .stream()
                 .map(Follow::getFollower)
-                .map(member -> new FollowInfoResDto(member.getName(), member.getNickName()))
+                .map(member -> new FollowInfoResDto(
+                        member.getId(),
+                        member.getName(),
+                        member.getNickName(),
+                        member.getProfileImgUrl()))
                 .toList();
 
         return new FollowListResDto(followingDtoList);
@@ -85,11 +93,5 @@ public class FollowService {
     private Follow findByFollowerAndFollowing(Member currentMember, Member followMember) {
         return followRepository.findByFollowerAndFollowing(currentMember, followMember)
                 .orElseThrow(() -> new NotFollowingException("팔로우하지 않은 유저입니다."));
-    }
-
-    private void validateFollowExists(Member currentMember, Member followMember) {
-        if (!followRepository.existsByFollowerAndFollowing(currentMember, followMember)) {
-            throw new NotFollowingException("팔로우하지 않은 유저입니다.");
-        }
     }
 }
