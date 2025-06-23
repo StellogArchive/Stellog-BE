@@ -20,7 +20,6 @@ import org.example.stellog.starbucks.exception.DuplicateStarbucksRouteLikeExcept
 import org.example.stellog.starbucks.exception.StarbucksNotFoundException;
 import org.example.stellog.starbucks.exception.StarbucksRouteBookmarkNotFoundException;
 import org.example.stellog.starbucks.exception.StarbucksRouteNotFoundException;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -116,9 +115,8 @@ public class StarbucksRouteService {
     }
 
     public StarbucksRouteListResDto getPopularRoutes(String email) {
-        long totalRoutes = starbucksRouteRepository.count();
         List<StarbucksRoute> popularRoutes =
-                starbucksRouteBookmarkRepository.findTopRoutesByBookmarkCount(PageRequest.of(0, (int) totalRoutes));
+                starbucksRouteBookmarkRepository.findTopRoutesByBookmarkCount();
 
         return getStarbucksRouteListResDto(email, popularRoutes);
     }
@@ -126,7 +124,6 @@ public class StarbucksRouteService {
     public StarbucksRouteResDto getRouteDetail(String email, Long routeId) {
         Member member = memberRoomService.findMemberByEmail(email);
         StarbucksRoute route = findStarbucksRouteById(routeId);
-        memberRoomService.validateMemberInRoom(member, route.getRoom());
 
         return toStarbucksRouteResDto(route, email);
     }
