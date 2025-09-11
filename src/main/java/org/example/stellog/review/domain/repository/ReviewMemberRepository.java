@@ -17,4 +17,6 @@ public interface ReviewMemberRepository extends JpaRepository<ReviewMember, Long
     List<ReviewMember> findAllByReviewIn(@Param("reviews") List<Review> reviews);
 
     int countByMember(Member member);
+
+    void deleteAllByReviewIn(List<Review> reviews);
 }
