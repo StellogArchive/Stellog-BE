@@ -26,7 +26,7 @@ jobs:
 
       - name: Build Docker image with latest and sha tags
         run: |
-          docker build --platform linux/arm64 \
+          docker build \
             -t ${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.DOCKERHUB_IMAGE_NAME }}:latest \
             -t ${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.DOCKERHUB_IMAGE_NAME }}:${{ github.sha }} .
 
