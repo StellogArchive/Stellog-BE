@@ -5,8 +5,8 @@ FROM amazoncorretto:17 AS builder
 # 작업 디렉토리 설정
 WORKDIR /workspace
 
-# dos2unix 설치
-RUN apk add --no-cache dos2unix
+# Debian 기반이므로 apt-get을 사용해 dos2unix 설치
+RUN apt-get update && apt-get install -y dos2unix
 
 # Gradle 래퍼와 소스 코드 복사
 COPY gradlew .
