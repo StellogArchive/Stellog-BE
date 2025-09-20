@@ -7,9 +7,12 @@ WORKDIR /workspace
 
 # Gradle 래퍼와 소스 코드 복사
 COPY gradlew .
+COPY gradle ./gradle
 COPY build.gradle .
 COPY settings.gradle .
 COPY src ./src
+
+RUN chmod +x ./gradlew
 
 # Gradle로 프로젝트 빌드
 RUN ./gradlew build -x test
