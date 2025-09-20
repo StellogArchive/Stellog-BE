@@ -27,6 +27,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.format.DateTimeFormatter;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -82,6 +83,7 @@ public class ReviewService {
 
         List<Review> reviews = starbucksReviews.stream()
                 .map(StarbucksReview::getReview)
+                .sorted(Comparator.comparing(Review::getCreatedAt).reversed())
                 .toList();
         Map<Long, ReviewMember> reviewToMemberMap = createReviewToReviewMemberMap(reviews);
 
@@ -94,7 +96,9 @@ public class ReviewService {
         Room room = memberRoomService.findRoomById(roomId);
         memberRoomService.validateMemberInRoom(currentMember, room);
 
-        List<Review> reviews = reviewRepository.findAllByRoom(room);
+        List<Review> reviews = reviewRepository.findAllByRoom(room).stream()
+                .sorted(Comparator.comparing(Review::getCreatedAt).reversed())
+                .toList();
         Map<Long, ReviewMember> reviewToMemberMap = createReviewToReviewMemberMap(reviews);
 
         List<StarbucksReview> starbucksReviews = starbucksReviewRepository.findAllByReviewIn(reviews);
@@ -111,6 +115,7 @@ public class ReviewService {
 
         List<Review> reviews = starbucksReviews.stream()
                 .map(StarbucksReview::getReview)
+                .sorted(Comparator.comparing(Review::getCreatedAt).reversed())
                 .toList();
         Map<Long, ReviewMember> reviewToMemberMap = createReviewToReviewMemberMap(reviews);
 

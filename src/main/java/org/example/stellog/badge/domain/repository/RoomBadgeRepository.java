@@ -11,4 +11,5 @@ public interface RoomBadgeRepository extends JpaRepository<RoomBadge, Long> {
 
     List<RoomBadge> findAllByRoom(Room room);
 
+    void deleteAllByRoom(Room room);
 }
