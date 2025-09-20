@@ -16,7 +16,7 @@ RUN ./gradlew build -x test
 
 # --- 2단계: 실행(Runtime) 환경 ---
 # 실행을 위해 더 가벼운 JRE 버전 사용
-FROM amazoncorretto:17-alpine-jre
+FROM amazoncorretto:17-alpine
 
 # 작업 디렉토리 생성
 WORKDIR /app
