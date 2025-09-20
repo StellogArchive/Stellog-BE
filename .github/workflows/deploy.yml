@@ -1,7 +1,7 @@
 name: Spring Boot CI/CD
 on:
   push:
-    branches: [ "be/develop" ] # develop에 푸시되면 실행
+    branches: [ "develop" ] # develop에 푸시되면 실행
 
 jobs:
   build-and-push: # 1. 소스 코드 빌드 후 Docker 이미지 생성 후 Docker Hub에 푸시
