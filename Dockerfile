@@ -5,12 +5,18 @@ FROM amazoncorretto:17 AS builder
 # 작업 디렉토리 설정
 WORKDIR /workspace
 
+# dos2unix 설치
+RUN apk add --no-cache dos2unix
+
 # Gradle 래퍼와 소스 코드 복사
 COPY gradlew .
 COPY gradle ./gradle
 COPY build.gradle .
 COPY settings.gradle .
 COPY src ./src
+
+# gradlew 파일 형식 변환 및 실행 권한 부여
+RUN dos2unix ./gradlew && chmod +x ./gradlew
 
 RUN chmod +x ./gradlew
 
