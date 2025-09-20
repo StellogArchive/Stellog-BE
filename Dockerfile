@@ -6,7 +6,7 @@ FROM amazoncorretto:17 AS builder
 WORKDIR /workspace
 
 # Debian 기반이므로 apt-get을 사용해 dos2unix 설치
-RUN apt-get update && apt-get install -y dos2unix
+RUN yum install -y dos2unix
 
 # Gradle 래퍼와 소스 코드 복사
 COPY gradlew .
