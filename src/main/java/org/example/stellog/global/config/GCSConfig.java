@@ -27,7 +27,8 @@ public class GCSConfig {
 
     private InputStream loadCredentialStream() {
         try {
-            InputStream stream = new FileInputStream(credentialPath);
+            String path = credentialPath.replaceFirst("^file:", "");
+            InputStream stream = new FileInputStream(path);
             return stream;
         } catch (IOException e) {
             throw new GCSFileNotFoundException(
