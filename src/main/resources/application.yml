@@ -15,12 +15,12 @@ spring:
 
   cloud:
     gcp:
-      project-id: ${GCP_PROJECT_ID}
+      project-id: ${spring.cloud.gcp.project-id}
       storage:
         bucket:
-          name: ${GCP_BUCKET_NAME}
+          name: ${spring.cloud.gcp.storage.bucket.name}
         credentials:
-          location: ${SPRING_CLOUD_GCP_STORAGE_CREDENTIALS_LOCATION}
+          location: ${spring.cloud.gcp.storage.credentials.location}
 
   jpa:
     database: mysql
