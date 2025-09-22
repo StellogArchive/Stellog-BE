@@ -1,6 +1,6 @@
 spring:
   profiles:
-    active: local
+    active: prod
   sql:
     init:
       mode: always
@@ -15,12 +15,12 @@ spring:
 
   cloud:
     gcp:
-      project-id: ${spring.cloud.gcp.project-id}
+      project-id: ${GCP_PROJECT_ID}
       storage:
         bucket:
-          name: ${spring.cloud.gcp.storage.bucket.name}
+          name: ${GCP_BUCKET_NAME}
         credentials:
-          location: ${spring.cloud.gcp.storage.credentials.location}
+          location: ${SPRING_CLOUD_GCP_STORAGE_CREDENTIALS_LOCATION}
 
   jpa:
     database: mysql
