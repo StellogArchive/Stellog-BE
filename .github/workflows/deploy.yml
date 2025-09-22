@@ -1,4 +1,5 @@
 name: Spring Boot CI/CD
+
 on:
   push:
     branches: [ "develop" ]
@@ -41,30 +42,30 @@ jobs:
     steps:
       - name: Pull latest Docker image
         run: docker pull ${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.DOCKERHUB_IMAGE_NAME }}:latest
-  
-      - name: Create GCP credentials file safely
+
+      - name: Create GCP credentials file
         run: echo "${{ secrets.GCP_STORAGE_CREDENTIALS }}" | base64 -d > /tmp/gcp-credentials.json
-  
+
       - name: Check credential file
         run: ls -l /tmp/gcp-credentials.json
-  
+
       - name: Stop existing Docker container
         run: docker stop ${{ secrets.DOCKERHUB_CONTAINER_NAME }} || true
-  
+
       - name: Remove existing Docker container
         run: docker rm ${{ secrets.DOCKERHUB_CONTAINER_NAME }} || true
-  
+
       - name: Run new Docker container
         run: |
           docker run -d --name ${{ secrets.DOCKERHUB_CONTAINER_NAME }} -p 8080:8080 \
-          -v /tmp/gcp-credentials.json:/tmp/gcp-credentials.json \
+          -v /tmp/gcp-credentials.json:/app/gcp-credentials.json \
           -e SPRING_PROFILES_ACTIVE=prod \
           -e SPRING_DATASOURCE_URL=${{ secrets.DB_URL_PROD }} \
           -e SPRING_DATASOURCE_USERNAME=${{ secrets.DB_USERNAME_PROD }} \
           -e SPRING_DATASOURCE_PASSWORD=${{ secrets.DB_PASSWORD_PROD }} \
           -e GCP_PROJECT_ID=${{ secrets.GCP_PROJECT_ID }} \
           -e GCP_BUCKET_NAME=${{ secrets.GCP_BUCKET_NAME }} \
-          -e SPRING_CLOUD_GCP_STORAGE_CREDENTIALS_LOCATION=/tmp/gcp-credentials.json \
+          -e SPRING_CLOUD_GCP_STORAGE_CREDENTIALS_LOCATION=/app/gcp-credentials.json \
           -e JWT_SECRET=${{ secrets.JWT_SECRET }} \
           -e JWT_EXPIRY=${{ secrets.JWT_EXPIRY }} \
           -e OAUTH_GOOGLE_CLIENT_ID=${{ secrets.OAUTH_GOOGLE_CLIENT_ID }} \

@@ -13,26 +13,21 @@ import org.springframework.context.annotation.Configuration;
 
 @Configuration
 public class GCSConfig {
+
     @Value("${spring.cloud.gcp.storage.credentials.location}")
     private String credentialPath;
 
     @Bean
     public Storage storage() throws IOException {
-        GoogleCredentials credentials = GoogleCredentials.fromStream(loadCredentialStream());
-        return StorageOptions.newBuilder()
-                .setCredentials(credentials)
-                .build()
-                .getService();
-    }
-
-    private InputStream loadCredentialStream() {
-        try {
-            String path = credentialPath.replaceFirst("^file:", "");
-            InputStream stream = new FileInputStream(path);
-            return stream;
+        try (InputStream stream = new FileInputStream(credentialPath)) {
+            GoogleCredentials credentials = GoogleCredentials.fromStream(stream);
+            return StorageOptions.newBuilder()
+                    .setCredentials(credentials)
+                    .build()
+                    .getService();
         } catch (IOException e) {
             throw new GCSFileNotFoundException(
-                    "GCP credentials 파일이 존재하지 않습니다: " + credentialPath, e);
+                    "GCP credentials 파일을 찾을 수 없습니다: " + credentialPath);
         }
     }
 }
