@@ -5,7 +5,6 @@ import com.google.cloud.storage.BlobInfo;
 import com.google.cloud.storage.Storage;
 import java.io.IOException;
 import java.util.UUID;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.example.stellog.global.util.MemberRoomService;
 import org.example.stellog.member.domain.Member;
@@ -15,13 +14,17 @@ import org.springframework.web.multipart.MultipartFile;
 
 @Slf4j
 @Service
-@RequiredArgsConstructor
 public class GCSService {
     private final Storage storage;
     private final MemberRoomService memberRoomService;
+    private final String bucketName;
 
-    @Value("${spring.cloud.gcp.storage.bucket.name}")
-    private String bucketName;
+    public GCSService(Storage storage, MemberRoomService memberRoomService,
+                      @Value("${spring.cloud.gcp.storage.bucket}") String bucketName) {
+        this.storage = storage;
+        this.memberRoomService = memberRoomService;
+        this.bucketName = bucketName;
+    }
 
     public String uploadFile(String email, MultipartFile file) throws IOException {
         log.info("uploadFile {} to bucket {}", file.getOriginalFilename(), bucketName);
