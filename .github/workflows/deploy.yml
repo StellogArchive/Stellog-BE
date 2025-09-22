@@ -1,7 +1,7 @@
 name: Spring Boot CI/CD
 on:
   push:
-    branches: [ "develop" ] # develop 브랜치에 푸시되면 실행
+    branches: [ "develop" ]
 
 jobs:
   build-and-push:
@@ -53,15 +53,14 @@ jobs:
 
       - name: Run new Docker container
         run: >
-          docker run -d --name ${{ secrets.DOCKERHUB_CONTAINER_NAME }} -p 8080:8080
-          -v /home/ec2-user/gcp-credentials.json:/app/resources/gcp-credentials.json
-          -e spring.profiles.active=prod
-          -e spring.datasource.url=${{ secrets.DB_URL_PROD }}
-          -e spring.datasource.username=${{ secrets.DB_USERNAME_PROD }}
-          -e spring.datasource.password=${{ secrets.DB_PASSWORD_PROD }}
-          -e spring.cloud.gcp.storage.credentials.location=classpath:gcp-credentials.json
-          -e jwt.secret=${{ secrets.JWT_SECRET }}
-          -e oauth.google.client-id=${{ secrets.OAUTH_GOOGLE_CLIENT_ID }}
-          -e oauth.google.client-secret=${{ secrets.OAUTH_GOOGLE_CLIENT_SECRET }}
-          # --- application-prod.yml에 필요한 나머지 모든 환경 변수를 여기에 추가 ---
+          docker run -d --name ${{ secrets.DOCKERHUB_CONTAINER_NAME }} -p 8080:8080 \
+          -v /home/ec2-user/gcp-credentials.json:/app/resources/gcp-credentials.json \
+          -e spring.profiles.active=prod \
+          -e spring.datasource.url=${{ secrets.DB_URL_PROD }} \
+          -e spring.datasource.username=${{ secrets.DB_USERNAME_PROD }} \
+          -e spring.datasource.password=${{ secrets.DB_PASSWORD_PROD }} \
+          -e spring.cloud.gcp.storage.credentials.location=classpath:gcp-credentials.json \
+          -e jwt.secret=${{ secrets.JWT_SECRET }} \
+          -e oauth.google.client-id=${{ secrets.OAUTH_GOOGLE_CLIENT_ID }} \
+          -e oauth.google.client-secret=${{ secrets.OAUTH_GOOGLE_CLIENT_SECRET }} \
           ${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.DOCKERHUB_IMAGE_NAME }}:latest
