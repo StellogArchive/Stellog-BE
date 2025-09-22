@@ -16,6 +16,14 @@ jobs:
           java-version: '17'
           distribution: 'corretto'
 
+      - name: Create GCP credentials file safely
+        run: echo "${{ secrets.GCP_STORAGE_CREDENTIALS }}" | base64 -d > ./src/main/resources/gcp-credentials.json
+        shell: bash
+
+      - name: Create application-prod.yml
+        run: echo "${{secrets.PROD_YML}}" > ./src/resources/application-prod.yml
+        shell: bash
+
       - name: Build with Gradle without tests
         run: ./gradlew build -x test
 
@@ -42,15 +50,6 @@ jobs:
     steps:
       - name: Pull latest Docker image
         run: docker pull ${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.DOCKERHUB_IMAGE_NAME }}:latest
-
-      - name: Create GCP credentials file safely
-        run: echo "${{ secrets.GCP_STORAGE_CREDENTIALS }}" | base64 -d > ./src/main/resources/gcp-credentials.json
-
-      - name: Check credential file
-        run: ls -l ./src/main/resources/gcp-credentials.json
-
-      - name: Create application-prod.yml
-        run: echo "${{secrets.PROD_YML}}" > ./src/resources/application-prod.yml
 
       - name: Stop existing Docker container
         run: docker stop ${{ secrets.DOCKERHUB_CONTAINER_NAME }} || true
