@@ -41,20 +41,23 @@ jobs:
     steps:
       - name: Pull latest Docker image
         run: docker pull ${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.DOCKERHUB_IMAGE_NAME }}:latest
-
+  
       - name: Create GCP credentials file safely
-        run: echo "${{ secrets.GCP_STORAGE_CREDENTIALS }}" | base64 -d > /home/ec2-user/gcp-credentials.json
-
+        run: echo "${{ secrets.GCP_STORAGE_CREDENTIALS }}" | base64 -d > /tmp/gcp-credentials.json
+  
+      - name: Check credential file
+        run: ls -l /tmp/gcp-credentials.json
+  
       - name: Stop existing Docker container
         run: docker stop ${{ secrets.DOCKERHUB_CONTAINER_NAME }} || true
-
+  
       - name: Remove existing Docker container
         run: docker rm ${{ secrets.DOCKERHUB_CONTAINER_NAME }} || true
-
+  
       - name: Run new Docker container
         run: |
           docker run -d --name ${{ secrets.DOCKERHUB_CONTAINER_NAME }} -p 8080:8080 \
-          -v /home/ec2-user/gcp-credentials.json:/app/gcp-credentials.json \
+          -v /tmp/gcp-credentials.json:/app/gcp-credentials.json \
           -e SPRING_PROFILES_ACTIVE=prod \
           -e SPRING_DATASOURCE_URL=${{ secrets.DB_URL_PROD }} \
           -e SPRING_DATASOURCE_USERNAME=${{ secrets.DB_USERNAME_PROD }} \
