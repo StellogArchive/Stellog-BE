@@ -21,7 +21,7 @@ jobs:
         shell: bash
 
       - name: Create application-prod.yml
-        run: echo "${{secrets.PROD_YML}}" > ./src/resources/application-prod.yml
+        run: echo "${{secrets.PROD_YML}}" > ./src/main/resources/application-prod.yml
         shell: bash
 
       - name: Build with Gradle without tests
