@@ -52,7 +52,7 @@ jobs:
         run: docker rm ${{ secrets.DOCKERHUB_CONTAINER_NAME }} || true
 
       - name: Run new Docker container
-        run: >
+        run: |
           docker run -d --name ${{ secrets.DOCKERHUB_CONTAINER_NAME }} -p 8080:8080 \
           -v /home/ec2-user/gcp-credentials.json:/app/resources/gcp-credentials.json \
           -e spring.profiles.active=prod \
