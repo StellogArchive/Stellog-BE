@@ -24,9 +24,10 @@ public class GCSService {
     private String bucketName;
 
     public String uploadFile(String email, MultipartFile file) throws IOException {
-        log.info("uploadFile 호출 {}", file.getOriginalFilename());
+        log.info("uploadFile {} to bucket {}", file.getOriginalFilename(), bucketName);
         Member member = memberRoomService.findMemberByEmail(email);
         String fileName = UUID.randomUUID().toString() + "_" + file.getOriginalFilename();
+        log.info("fileName {}", fileName);
         BlobId blobId = BlobId.of(bucketName, fileName);
         BlobInfo blobInfo = BlobInfo.newBuilder(blobId).setContentType(file.getContentType()).build();
 
