@@ -55,12 +55,22 @@ jobs:
         run: |
           docker run -d --name ${{ secrets.DOCKERHUB_CONTAINER_NAME }} -p 8080:8080 \
           -v /home/ec2-user/gcp-credentials.json:/app/resources/gcp-credentials.json \
-          -e spring.profiles.active=prod \
-          -e spring.datasource.url=${{ secrets.DB_URL_PROD }} \
-          -e spring.datasource.username=${{ secrets.DB_USERNAME_PROD }} \
-          -e spring.datasource.password=${{ secrets.DB_PASSWORD_PROD }} \
-          -e spring.cloud.gcp.storage.credentials.location=classpath:gcp-credentials.json \
-          -e jwt.secret=${{ secrets.JWT_SECRET }} \
-          -e oauth.google.client-id=${{ secrets.OAUTH_GOOGLE_CLIENT_ID }} \
-          -e oauth.google.client-secret=${{ secrets.OAUTH_GOOGLE_CLIENT_SECRET }} \
+          -e SPRING_PROFILES_ACTIVE=prod \
+          -e SPRING_DATASOURCE_URL=${{ secrets.DB_URL_PROD }} \
+          -e SPRING_DATASOURCE_USERNAME=${{ secrets.DB_USERNAME_PROD }} \
+          -e SPRING_DATASOURCE_PASSWORD=${{ secrets.DB_PASSWORD_PROD }} \
+          -e SPRING_CLOUD_GCP_STORAGE_CREDENTIALS_LOCATION=/app/resources/gcp-credentials.json \
+          -e JWT_SECRET=${{ secrets.JWT_SECRET }} \
+          -e JWT_EXPIRY=${{ secrets.JWT_EXPIRY }} \
+          -e OAUTH_GOOGLE_CLIENT_ID=${{ secrets.OAUTH_GOOGLE_CLIENT_ID }} \
+          -e OAUTH_GOOGLE_CLIENT_SECRET=${{ secrets.OAUTH_GOOGLE_CLIENT_SECRET }} \
+          -e OAUTH_GOOGLE_REDIRECT_URI=${{ secrets.OAUTH_GOOGLE_REDIRECT_URI }} \
+          -e OAUTH_GOOGLE_TOKEN_URI=${{ secrets.OAUTH_GOOGLE_TOKEN_URI }} \
+          -e OAUTH_GOOGLE_USER_INFO_URI=${{ secrets.OAUTH_GOOGLE_USER_INFO_URI }} \
+          -e OAUTH_KAKAO_CLIENT_ID=${{ secrets.OAUTH_KAKAO_CLIENT_ID }} \
+          -e OAUTH_KAKAO_REDIRECT_URI=${{ secrets.OAUTH_KAKAO_REDIRECT_URI }} \
+          -e OAUTH_KAKAO_TOKEN_URI=${{ secrets.OAUTH_KAKAO_TOKEN_URI }} \
+          -e OAUTH_KAKAO_USER_INFO_URI=${{ secrets.OAUTH_KAKAO_USER_INFO_URI }} \
+          -e SWAGGER_SERVER_PROD_URL=${{ secrets.SWAGGER_SERVER_PROD_URL }} \
+          -e SWAGGER_SERVER_LOCAL_URL=${{ secrets.SWAGGER_SERVER_LOCAL_URL }} \
           ${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.DOCKERHUB_IMAGE_NAME }}:latest
