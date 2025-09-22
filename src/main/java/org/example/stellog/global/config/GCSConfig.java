@@ -3,19 +3,18 @@ package org.example.stellog.global.config;
 import com.google.auth.oauth2.GoogleCredentials;
 import com.google.cloud.storage.Storage;
 import com.google.cloud.storage.StorageOptions;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import org.example.stellog.gcs.exception.GCSFileNotFoundException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.stereotype.Component;
 
 @Configuration
-@Component
 public class GCSConfig {
     @Value("${spring.cloud.gcp.storage.credentials.location}")
-    private String credentialJson;
+    private String credentialPath;
 
     @Bean
     public Storage storage() throws IOException {
@@ -28,9 +27,11 @@ public class GCSConfig {
 
     private InputStream loadCredentialStream() {
         try {
-            return new java.io.FileInputStream(credentialJson);
+            InputStream stream = new FileInputStream(credentialPath);
+            return stream;
         } catch (IOException e) {
-            throw new GCSFileNotFoundException("GCP credentials 파일을 찾을 수 없습니다: " + credentialJson);
+            throw new GCSFileNotFoundException(
+                    "GCP credentials 파일이 존재하지 않습니다: " + credentialPath, e);
         }
     }
 }
