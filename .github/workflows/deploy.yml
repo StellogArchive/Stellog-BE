@@ -43,11 +43,11 @@ jobs:
       - name: Pull latest Docker image
         run: docker pull ${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.DOCKERHUB_IMAGE_NAME }}:latest
 
-      - name: Create GCP credentials file
-        run: echo "${{ secrets.GCP_STORAGE_CREDENTIALS }}" | base64 -d > /tmp/gcp-credentials.json
+      - name: Create GCP credentials file safely
+        run: echo "${{ secrets.GCP_STORAGE_CREDENTIALS }}" | base64 -d > /home/ec2-user/gcp-credentials.json
 
       - name: Check credential file
-        run: ls -l /tmp/gcp-credentials.json
+        run: ls -l /home/ec2-user/gcp-credentials.json
 
       - name: Stop existing Docker container
         run: docker stop ${{ secrets.DOCKERHUB_CONTAINER_NAME }} || true
